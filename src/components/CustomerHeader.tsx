@@ -40,6 +40,10 @@ export default function CustomerHeader({ userEmail }: { userEmail: string | unde
           <span style={{ fontSize: '0.875rem', marginLeft: '0.5rem' }}>Cart</span>
         </Link>
 
+        <Link href="/customer/orders" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none', marginLeft: '0.5rem' }}>
+          Orders
+        </Link>
+
         {userEmail && (
           <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>| {userEmail}</span>
         )}
