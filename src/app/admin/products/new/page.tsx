@@ -29,7 +29,7 @@ export default function NewProductPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
              <div>
-              <label className="label" htmlFor="price">Price ($)</label>
+              <label className="label" htmlFor="price">Price (₹)</label>
               <input id="price" name="price" type="number" step="0.01" className="input-field" required placeholder="299.99" />
             </div>
             <div>

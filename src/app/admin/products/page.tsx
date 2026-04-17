@@ -50,7 +50,7 @@ export default async function AdminProductsPage() {
                       <span className="badge">{product.category || 'N/A'}</span>
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--success)' }}>
-                      ${Number(product.price).toFixed(2)}
+                      ₹{Number(product.price).toFixed(2)}
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ color: product.stock_quantity > 0 ? '' : 'var(--danger)' }}>

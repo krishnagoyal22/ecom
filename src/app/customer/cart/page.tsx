@@ -78,7 +78,7 @@ export default function CartPage() {
 
               <div style={{ flex: 1 }}>
                 <h3 style={{ fontSize: '1rem' }}>{item.title}</h3>
-                <p style={{ color: 'var(--success)', fontWeight: 600, marginTop: '0.25rem' }}>${item.price.toFixed(2)}</p>
+                <p style={{ color: 'var(--success)', fontWeight: 600, marginTop: '0.25rem' }}>₹{item.price.toFixed(2)}</p>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -112,7 +112,7 @@ export default function CartPage() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
             <span>Subtotal</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>₹{totalPrice.toFixed(2)}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
             <span>Shipping</span>
@@ -120,7 +120,7 @@ export default function CartPage() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: 700, borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
             <span>Total</span>
-            <span style={{ color: 'var(--success)' }}>${totalPrice.toFixed(2)}</span>
+            <span style={{ color: 'var(--success)' }}>₹{totalPrice.toFixed(2)}</span>
           </div>
 
           <button 

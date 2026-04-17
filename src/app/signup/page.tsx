@@ -39,7 +39,7 @@ export default function SignupPage() {
       <div className="card auth-form">
         <h2 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Create Account</h2>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-          Register a new admin account
+          Register a new store account
         </p>
 
         {error && (

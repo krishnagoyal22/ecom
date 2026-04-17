@@ -48,5 +48,23 @@ export async function processCheckout(items: CartItem[], totalAmount: number, sh
     return { success: false, error: 'Failed to record items for the order.' };
   }
 
+  // 3. Update product inventory securely using Service Role Key
+  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js');
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  
+  if (supabaseServiceKey && supabaseServiceKey !== 'your-service-role-key-here') {
+    const supabaseAdmin = createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
+    
+    for (const item of items) {
+      // Fetch latest stock to carefully deduct
+      const { data: product } = await supabaseAdmin.from('products').select('stock_quantity').eq('id', item.id).single();
+      if (product) {
+        const newStock = Math.max(0, product.stock_quantity - item.quantity);
+        await supabaseAdmin.from('products').update({ stock_quantity: newStock }).eq('id', item.id);
+      }
+    }
+  }
+
   return { success: true, orderId: order.id };
 }

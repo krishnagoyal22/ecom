@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
         <div className="card">
           <div className="label">Current Revenue</div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--success)' }}>
-            ${totalRevenue.toFixed(2)}
+            ₹{totalRevenue.toFixed(2)}
           </div>
           <div style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Based on {totalOrders} orders</div>
         </div>
@@ -94,7 +94,7 @@ export default async function AdminDashboardPage() {
                         </span>
                       </td>
                       <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', textAlign: 'right', fontWeight: 600 }}>
-                        ${Number(order.total_amount).toFixed(2)}
+                        ₹{Number(order.total_amount).toFixed(2)}
                       </td>
                     </tr>
                   ))

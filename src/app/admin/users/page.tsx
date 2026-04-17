@@ -1,22 +1,33 @@
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
+import { updateUserRole } from './actions';
 
 export default async function AdminUsersPage() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  let users = null;
+  let usersWithRoles: any[] = [];
   let authError = null;
 
   if (!supabaseServiceKey || supabaseServiceKey === 'your-service-role-key-here') {
     authError = new Error("SUPABASE_SERVICE_ROLE_KEY is missing from .env.local. You need this to fetch the auth list natively.");
   } else {
     const supabaseAdmin = createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
     
-    if (error) {
-      authError = error;
+    // Fetch auth users
+    const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.listUsers();
+    
+    // Fetch profiles map
+    const { data: profiles, error: profileErr } = await supabaseAdmin.from('profiles').select('id, role');
+
+    if (authErr) {
+      authError = authErr;
     } else {
-      users = data.users;
+      const profileMap = new Map(profiles?.map(p => [p.id, p.role]) || []);
+      
+      usersWithRoles = authData.users.map((u) => ({
+        ...u,
+        role: profileMap.get(u.id) || 'customer'
+      }));
     }
   }
 
@@ -24,7 +35,7 @@ export default async function AdminUsersPage() {
     <>
       <div className="header fade-in">
         <h1>User Management</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>View all registered accounts in your Supabase Auth instance.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Assign administrative permissions and view registered accounts.</p>
       </div>
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -38,31 +49,47 @@ export default async function AdminUsersPage() {
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>UUID</th>
                   <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Email</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Account Joined</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Last Sign In</th>
+                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Status</th>
+                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Joined</th>
+                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {users?.length === 0 ? (
+                {usersWithRoles.length === 0 ? (
                   <tr>
                     <td colSpan={4} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No registered users found.</td>
                   </tr>
                 ) : (
-                  users?.map((u) => (
+                  usersWithRoles.map((u) => (
                     <tr key={u.id}>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem' }}>
-                        <span title={u.id}>{u.id.split('-')[0]}...{u.id.split('-').pop()}</span>
-                      </td>
                       <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontWeight: 500 }}>
-                        {u.email}
+                        {u.email} {u.email === 'goyalkrishna006@gmail.com' && <span style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Owner)</span>}
+                      </td>
+                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                         <span className="badge" style={{ 
+                            backgroundColor: u.email === 'goyalkrishna006@gmail.com' ? 'rgba(234, 179, 8, 0.2)' : u.role === 'admin' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)', 
+                            color: u.email === 'goyalkrishna006@gmail.com' ? '#eab308' : u.role === 'admin' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                            borderColor: u.email === 'goyalkrishna006@gmail.com' ? 'rgba(234, 179, 8, 0.3)' : 'transparent'
+                          }}>
+                           {u.email === 'goyalkrishna006@gmail.com' ? 'OWNER' : u.role.toUpperCase()}
+                         </span>
                       </td>
                       <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
                          {new Date(u.created_at).toLocaleDateString()}
                       </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                         {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : 'Never'}
+                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>
+                         {u.email !== 'goyalkrishna006@gmail.com' ? (
+                           <form action={updateUserRole} style={{ display: 'inline-block' }}>
+                              <input type="hidden" name="id" value={u.id} />
+                              <input type="hidden" name="role" value={u.role === 'admin' ? 'customer' : 'admin'} />
+                              <button type="submit" className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>
+                                {u.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
+                              </button>
+                           </form>
+                         ) : (
+                           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Immutable</span>
+                         )}
                       </td>
                     </tr>
                   ))

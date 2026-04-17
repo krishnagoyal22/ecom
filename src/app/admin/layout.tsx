@@ -17,7 +17,15 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  if (user.email !== 'goyalkrishna006@gmail.com') {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const isAdmin = user.email === 'goyalkrishna006@gmail.com' || profile?.role === 'admin';
+
+  if (!isAdmin) {
     redirect('/customer');
   }
 

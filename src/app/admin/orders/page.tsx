@@ -53,7 +53,7 @@ export default async function AdminOrdersPage() {
                       <span title={order.user_id}>{order.user_id.split('-')[0]}...</span>
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--success)', fontWeight: 600 }}>
-                      ${Number(order.total_amount).toFixed(2)}
+                      ₹{Number(order.total_amount).toFixed(2)}
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
                        <span className="badge" style={{ backgroundColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.2)' : 'rgba(99, 102, 241, 0.2)', color: order.status === 'Pending' ? '#eab308' : 'var(--accent-primary)', borderColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(99, 102, 241, 0.3)' }}>

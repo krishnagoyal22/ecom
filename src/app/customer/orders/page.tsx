@@ -68,7 +68,7 @@ export default async function OrderHistoryPage() {
                   </div>
                   <div>
                     <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Total</p>
-                    <p style={{ fontWeight: 500, color: 'var(--success)' }}>${Number(order.total_amount).toFixed(2)}</p>
+                    <p style={{ fontWeight: 500, color: 'var(--success)' }}>₹{Number(order.total_amount).toFixed(2)}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Ship To</p>
@@ -104,11 +104,11 @@ export default async function OrderHistoryPage() {
                         <div style={{ flex: 1 }}>
                           <h4 style={{ fontSize: '1rem', marginBottom: '0.25rem' }}>{productData?.title || 'No longer available'}</h4>
                           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                            Qty: {item.quantity} × ${Number(item.price_at_purchase).toFixed(2)}
+                            Qty: {item.quantity} × ₹{Number(item.price_at_purchase).toFixed(2)}
                           </p>
                         </div>
                         <div style={{ fontWeight: 600 }}>
-                           ${(Number(item.price_at_purchase) * item.quantity).toFixed(2)}
+                           ₹{(Number(item.price_at_purchase) * item.quantity).toFixed(2)}
                         </div>
                       </div>
                     );

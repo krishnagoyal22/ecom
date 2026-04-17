@@ -19,10 +19,18 @@ export default async function CustomerLayout({
     redirect('/login');
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const isAdmin = user.email === 'goyalkrishna006@gmail.com' || profile?.role === 'admin';
+
   return (
     <CartProvider>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <CustomerHeader userEmail={user.email} />
+        <CustomerHeader userEmail={user.email} isAdmin={isAdmin} />
         
         {/* Main Content Area */}
         <main className="container" style={{ flex: 1, padding: '2rem' }}>
