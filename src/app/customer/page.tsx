@@ -1,14 +1,28 @@
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
 import AddToCartButton from '@/components/AddToCartButton';
+import SearchInput from '@/components/SearchInput';
+import { Suspense } from 'react';
 
-export default async function CustomerPage() {
+interface PageProps {
+  searchParams: Promise<{ q?: string }>;
+}
+
+export default async function CustomerPage({ searchParams }: PageProps) {
   const supabase = await createClient();
+  const resolvedParams = await searchParams;
+  const searchQuery = resolvedParams?.q || '';
 
-  const { data: products, error } = await supabase
+  let query = supabase
     .from('products')
     .select('*')
     .order('created_at', { ascending: false });
+
+  if (searchQuery) {
+    query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+  }
+
+  const { data: products, error } = await query;
 
   const displayProducts = products || [];
 
@@ -33,6 +47,10 @@ export default async function CustomerPage() {
         </div>
       </div>
 
+      <Suspense fallback={<div style={{ marginBottom: '2rem' }}>Loading search...</div>}>
+        <SearchInput />
+      </Suspense>
+
       {error && (
         <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
           Could not fetch products live from Supabase. Did you run the SQL script? Error: {error.message}
@@ -53,7 +71,7 @@ export default async function CustomerPage() {
           </h2>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            {groupedProducts[category].map((product) => (
+            {groupedProducts[category].map((product: any) => (
               <Link href={`/customer/product/${product.id}`} key={product.id} className="card product-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textDecoration: 'none', transition: 'transform 0.2s, box-shadow 0.2s' }}>
                 <div style={{ 
                   width: '100%', 
