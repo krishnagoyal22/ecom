@@ -17,6 +17,10 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
+  if (user.email !== 'goyalkrishna006@gmail.com') {
+    redirect('/customer');
+  }
+
   // To support sign out action
   const signOut = async () => {
     'use server';
@@ -35,6 +39,12 @@ export default async function AdminLayout({
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
           <Link href="/admin" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
             Overview
+          </Link>
+          <Link href="/admin/products" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none' }}>
+            Products
+          </Link>
+          <Link href="/admin/orders" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none' }}>
+            Orders
           </Link>
           <Link href="/admin/users" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none' }}>
             Users

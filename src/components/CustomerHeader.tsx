@@ -44,6 +44,12 @@ export default function CustomerHeader({ userEmail }: { userEmail: string | unde
           Orders
         </Link>
 
+        {userEmail && userEmail === 'goyalkrishna006@gmail.com' && (
+          <Link href="/admin" style={{ fontSize: '0.875rem', color: 'var(--accent-primary)', textDecoration: 'none', marginLeft: '0.5rem', fontWeight: 'bold' }}>
+            Admin
+          </Link>
+        )}
+
         {userEmail && (
           <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>| {userEmail}</span>
         )}

@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import AddToCartButton from '@/components/AddToCartButton';
 import SearchInput from '@/components/SearchInput';
 import { Suspense } from 'react';
@@ -85,7 +86,7 @@ export default async function CustomerPage({ searchParams }: PageProps) {
                   position: 'relative'
                 }}>
                   {product.image_url ? (
-                     <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                     <Image src={product.image_url} alt={product.title} fill style={{ objectFit: 'cover', borderRadius: '0.5rem' }} sizes="(max-width: 768px) 100vw, 300px" />
                   ) : (
                     <span>No Image</span>
                   )}

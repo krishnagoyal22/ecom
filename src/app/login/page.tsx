@@ -26,16 +26,16 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/admin');
+      router.push('/customer');
     }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="card auth-form">
-        <h2 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Admin Dashboard</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Welcome Back</h2>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-          Sign in to access the control panel
+          Sign in to access your account
         </p>
 
         {error && (

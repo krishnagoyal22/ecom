@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function OrderHistoryPage() {
   const supabase = await createClient();
@@ -93,9 +94,9 @@ export default async function OrderHistoryPage() {
                     const productData = item.products; // Extracted via join
                     return (
                       <div key={index} style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '0.5rem', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '0.5rem', flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                           {productData?.image_url ? (
-                            <img src={productData.image_url} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <Image src={productData.image_url} alt="Product" fill style={{ objectFit: 'cover' }} sizes="80px" />
                           ) : (
                             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>IMG</span>
                           )}

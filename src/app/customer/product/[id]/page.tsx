@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -37,10 +38,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'var(--text-secondary)'
+          color: 'var(--text-secondary)',
+          position: 'relative'
         }}>
           {product.image_url ? (
-             <img src={product.image_url} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+             <Image src={product.image_url} alt={product.title} fill style={{ objectFit: 'cover', borderRadius: 'var(--radius)' }} sizes="(max-width: 768px) 100vw, 400px" />
           ) : (
             <span>No Image Available</span>
           )}

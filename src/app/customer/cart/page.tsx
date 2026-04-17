@@ -2,6 +2,7 @@
 
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { processCheckout } from '../actions';
 import { useRouter } from 'next/navigation';
@@ -71,8 +72,8 @@ export default function CartPage() {
         <div style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {items.map((item) => (
             <div key={item.id} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1rem' }}>
-              <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {item.image_url ? <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} /> : 'IMG'}
+              <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                {item.image_url ? <Image src={item.image_url} alt={item.title} fill style={{ objectFit: 'cover' }} sizes="80px" /> : 'IMG'}
               </div>
 
               <div style={{ flex: 1 }}>
