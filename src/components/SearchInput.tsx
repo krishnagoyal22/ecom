@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SearchInput() {
   const router = useRouter();
@@ -10,28 +10,30 @@ export default function SearchInput() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (query.trim()) {
       router.push(`/customer?q=${encodeURIComponent(query)}`);
-    } else {
-      router.push(`/customer`);
+      return;
     }
+
+    router.push('/customer');
   };
 
   return (
-    <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }} className="fade-in">
+    <form onSubmit={handleSearch} className="search-shell fade-in">
+      <span className="search-icon" aria-hidden="true">
+        Search
+      </span>
       <input
         type="text"
-        placeholder="Search for products..."
+        placeholder="Search by title or description"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="input-field"
-        style={{ flex: 1 }}
+        aria-label="Search products"
       />
-      <button 
-        type="submit"
-        className="btn btn-primary"
-      >
-        Search
+      <button type="submit" className="btn btn-primary">
+        Find products
       </button>
     </form>
   );

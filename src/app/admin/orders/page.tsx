@@ -1,76 +1,83 @@
 import { createClient } from '@/utils/supabase/server';
 import { updateOrderStatus } from './actions';
 
+function getStatusClass(status: string) {
+  switch (status) {
+    case 'Pending':
+      return 'status-pill status-pending';
+    case 'Delivered':
+      return 'status-pill status-delivered';
+    case 'Cancelled':
+      return 'status-pill status-cancelled';
+    case 'Processing':
+      return 'status-pill status-processing';
+    case 'Shipped':
+      return 'status-pill status-shipped';
+    default:
+      return 'status-pill status-customer';
+  }
+}
+
 export default async function AdminOrdersPage() {
   const supabase = await createClient();
-  
-  // Fetch orders with order_items
   const { data: orders } = await supabase
     .from('orders')
-    .select(`
-      id,
-      status,
-      total_amount,
-      created_at,
-      shipping_address,
-      user_id
-    `)
+    .select('id, status, total_amount, created_at, user_id')
     .order('created_at', { ascending: false });
 
   return (
-    <>
-      <div className="header fade-in">
-        <h1>Orders Management</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>View and update fulfillment status for customer orders.</p>
-      </div>
+    <div className="admin-panel fade-in">
+      <section className="page-head">
+        <div className="page-head-copy">
+          <span className="eyebrow">Orders</span>
+          <h1>Fulfillment management</h1>
+          <p>Track order flow and update statuses from the same responsive admin surface.</p>
+        </div>
+      </section>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      <section className="panel-card">
         <div className="table-wrapper">
-          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Order ID</th>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Date</th>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Customer ID</th>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Subtotal</th>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Status</th>
-                <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', textAlign: 'right' }}>Update</th>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Subtotal</th>
+                <th>Status</th>
+                <th>Update</th>
               </tr>
             </thead>
             <tbody>
               {!orders || orders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No orders found.</td>
+                  <td colSpan={6}>
+                    <div className="empty-state">No orders found.</div>
+                  </td>
                 </tr>
               ) : (
                 orders.map((order) => (
                   <tr key={order.id}>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem' }}>{order.id.split('-')[0]}...</td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                      {new Date(order.created_at).toLocaleDateString()}
-                    </td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem' }}>
+                    <td>{order.id.split('-')[0]}...</td>
+                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                    <td>
                       <span title={order.user_id}>{order.user_id.split('-')[0]}...</span>
                     </td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--success)', fontWeight: 600 }}>
-                      ₹{Number(order.total_amount).toFixed(2)}
+                    <td>Rs. {Number(order.total_amount).toFixed(2)}</td>
+                    <td>
+                      <span className={getStatusClass(order.status)}>{order.status}</span>
                     </td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                       <span className="badge" style={{ backgroundColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.2)' : 'rgba(99, 102, 241, 0.2)', color: order.status === 'Pending' ? '#eab308' : 'var(--accent-primary)', borderColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(99, 102, 241, 0.3)' }}>
-                          {order.status}
-                       </span>
-                    </td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>
-                      <form action={updateOrderStatus} style={{ display: 'inline-flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <td>
+                      <form action={updateOrderStatus} className="mini-form">
                         <input type="hidden" name="id" value={order.id} />
-                        <select name="status" defaultValue={order.status} className="input-field" style={{ padding: '0.25rem', fontSize: '0.875rem', width: 'auto' }}>
+                        <select name="status" defaultValue={order.status} className="input-field">
                           <option value="Pending">Pending</option>
                           <option value="Processing">Processing</option>
                           <option value="Shipped">Shipped</option>
                           <option value="Delivered">Delivered</option>
                           <option value="Cancelled">Cancelled</option>
                         </select>
-                        <button type="submit" className="btn btn-primary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}>
+                        <button type="submit" className="btn btn-primary">
                           Save
                         </button>
                       </form>
@@ -81,7 +88,7 @@ export default async function AdminOrdersPage() {
             </tbody>
           </table>
         </div>
-      </div>
-    </>
+      </section>
+    </div>
   );
 }

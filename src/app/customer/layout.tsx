@@ -1,7 +1,7 @@
-import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import CustomerHeader from '@/components/CustomerHeader';
 import { CartProvider } from '@/context/CartContext';
+import { createClient } from '@/utils/supabase/server';
 
 export default async function CustomerLayout({
   children,
@@ -14,7 +14,6 @@ export default async function CustomerLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If no user, redirect to login
   if (!user) {
     redirect('/login');
   }
@@ -29,13 +28,9 @@ export default async function CustomerLayout({
 
   return (
     <CartProvider>
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div className="customer-shell">
         <CustomerHeader userEmail={user.email} isAdmin={isAdmin} />
-        
-        {/* Main Content Area */}
-        <main className="container" style={{ flex: 1, padding: '2rem' }}>
-          {children}
-        </main>
+        <main className="container store-main">{children}</main>
       </div>
     </CartProvider>
   );

@@ -1,64 +1,101 @@
-import { addProduct } from '../actions';
 import Link from 'next/link';
+import { addProduct } from '../actions';
 
 export default function NewProductPage() {
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="header" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <Link href="/admin/products" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>
-            ← Back to Products
+    <div className="admin-form-shell admin-panel fade-in">
+      <section className="page-head">
+        <div className="page-head-copy">
+          <Link href="/admin/products" className="subtle-link">
+            Back to products
           </Link>
-          <h2>Add New Product</h2>
+          <h2>Add a new product</h2>
+          <p>Create a fresh catalog item with mobile-friendly form layout and cleaner spacing.</p>
         </div>
-      </div>
+      </section>
 
-      <div className="card">
-        <form action={addProduct} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <section className="panel-card">
+        <form action={addProduct} className="responsive-stack">
+          <div className="form-grid">
             <div>
-              <label className="label" htmlFor="title">Product Title</label>
-              <input id="title" name="title" type="text" className="input-field" required placeholder="e.g. Premium Wireless Headphones" />
+              <label className="label" htmlFor="title">
+                Product title
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                className="input-field"
+                required
+                placeholder="Premium wireless headphones"
+              />
             </div>
             <div>
-              <label className="label" htmlFor="category">Category</label>
-              <input id="category" name="category" type="text" className="input-field" required placeholder="e.g. Electronics" />
+              <label className="label" htmlFor="category">
+                Category
+              </label>
+              <input
+                id="category"
+                name="category"
+                type="text"
+                className="input-field"
+                required
+                placeholder="Electronics"
+              />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-             <div>
-              <label className="label" htmlFor="price">Price (₹)</label>
-              <input id="price" name="price" type="number" step="0.01" className="input-field" required placeholder="299.99" />
+          <div className="form-grid">
+            <div>
+              <label className="label" htmlFor="price">
+                Price (Rs.)
+              </label>
+              <input id="price" name="price" type="number" step="0.01" className="input-field" required />
             </div>
             <div>
-              <label className="label" htmlFor="stock_quantity">Stock Quantity</label>
-              <input id="stock_quantity" name="stock_quantity" type="number" className="input-field" required placeholder="100" />
+              <label className="label" htmlFor="stock_quantity">
+                Stock quantity
+              </label>
+              <input id="stock_quantity" name="stock_quantity" type="number" className="input-field" required />
             </div>
           </div>
 
           <div>
-            <label className="label" htmlFor="image_url">Image URL</label>
-            <input id="image_url" name="image_url" type="url" className="input-field" placeholder="https://example.com/image.jpg" />
+            <label className="label" htmlFor="image_url">
+              Image URL
+            </label>
+            <input
+              id="image_url"
+              name="image_url"
+              type="url"
+              className="input-field"
+              placeholder="https://example.com/image.jpg"
+            />
           </div>
 
           <div>
-            <label className="label" htmlFor="description">Description</label>
-            <textarea id="description" name="description" className="input-field" rows={5} required placeholder="Detailed product description..."></textarea>
+            <label className="label" htmlFor="description">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              className="input-field textarea-field"
+              required
+              placeholder="Describe the product, materials, highlights, and why it belongs in the collection."
+            />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
+          <div className="form-actions">
             <Link href="/admin/products" className="btn btn-secondary">
               Cancel
             </Link>
-            <button type="submit" className="btn btn-primary" style={{ backgroundColor: 'var(--accent-primary)' }}>
-              Save Product
+            <button type="submit" className="btn btn-primary">
+              Save product
             </button>
           </div>
-
         </form>
-      </div>
+      </section>
     </div>
   );
 }

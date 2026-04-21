@@ -1,12 +1,15 @@
-import { createClient } from '@/utils/supabase/server';
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import AnimatedProductView from '@/components/AnimatedProductView';
+import { createClient } from '@/utils/supabase/server';
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = await params;
   const productId = resolvedParams.id;
-  
   const supabase = await createClient();
 
   const { data: product, error } = await supabase
@@ -20,10 +23,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <Link href="/customer" style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--accent-primary)', fontSize: '0.875rem', textDecoration: 'none' }}>
-          ← Back to Shop
+    <div className="panel-grid fade-in">
+      <div>
+        <Link href="/customer" className="subtle-link">
+          Back to shop
         </Link>
       </div>
 
