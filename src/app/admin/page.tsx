@@ -1,6 +1,23 @@
+import Link from 'next/link';
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
-import Link from 'next/link';
+
+function getStatusClass(status: string) {
+  switch (status) {
+    case 'Pending':
+      return 'status-pill status-pending';
+    case 'Delivered':
+      return 'status-pill status-delivered';
+    case 'Cancelled':
+      return 'status-pill status-cancelled';
+    case 'Processing':
+      return 'status-pill status-processing';
+    case 'Shipped':
+      return 'status-pill status-shipped';
+    default:
+      return 'status-pill status-customer';
+  }
+}
 
 export default async function AdminDashboardPage() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -16,94 +33,100 @@ export default async function AdminDashboardPage() {
   }
 
   const supabase = await createClient();
+  const { data: allOrders } = await supabase
+    .from('orders')
+    .select('id, total_amount, status, created_at')
+    .order('created_at', { ascending: false });
+  const { count: totalProducts } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true });
 
-  // Fetch all orders to calculate revenue and count
-  const { data: allOrders } = await supabase.from('orders').select('id, total_amount, status, created_at, shipping_address').order('created_at', { ascending: false });
-  
   const totalOrders = allOrders ? allOrders.length : 0;
-  const totalRevenue = allOrders ? allOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) : 0;
+  const totalRevenue = allOrders
+    ? allOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0)
+    : 0;
   const recentOrders = allOrders ? allOrders.slice(0, 5) : [];
 
-  // Fetch products count
-  const { count: totalProducts } = await supabase.from('products').select('*', { count: 'exact', head: true });
-
   return (
-    <>
-      <div className="header fade-in">
-        <h1>Dashboard Overview</h1>
-        <button className="btn btn-primary" style={{ backgroundColor: 'var(--accent-primary)' }}>Download Report</button>
-      </div>
+    <div className="admin-panel fade-in">
+      <section className="page-head">
+        <div className="page-head-copy">
+          <span className="eyebrow">Overview</span>
+          <h1>Store control at a glance.</h1>
+          <p>Track revenue, orders, products, and account growth from a dashboard that works just as well on mobile.</p>
+        </div>
+        <Link href="/admin/orders" className="btn btn-primary">
+          Review orders
+        </Link>
+      </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-        <div className="card">
-          <div className="label">Current Revenue</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--success)' }}>
-            ₹{totalRevenue.toFixed(2)}
+      <section className="metrics-grid">
+        <article className="metric-card">
+          <div className="label">Current revenue</div>
+          <strong>Rs. {totalRevenue.toFixed(2)}</strong>
+          <span>Based on {totalOrders} total orders</span>
+        </article>
+        <article className="metric-card">
+          <div className="label">Orders placed</div>
+          <strong>{totalOrders}</strong>
+          <span>All-time order count</span>
+        </article>
+        <article className="metric-card">
+          <div className="label">Active products</div>
+          <strong>{totalProducts || 0}</strong>
+          <span>Items available in the catalog</span>
+        </article>
+        <article className="metric-card">
+          <div className="label">Registered accounts</div>
+          <strong>{authUsersCount}</strong>
+          <span>Users found in Supabase Auth</span>
+        </article>
+      </section>
+
+      <section className="panel-card">
+        <div className="panel-card-header">
+          <div className="page-head-copy">
+            <h2>Recent orders</h2>
+            <p>The latest activity from the storefront, with clearer status visibility.</p>
           </div>
-          <div style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Based on {totalOrders} orders</div>
+          <Link href="/admin/orders" className="subtle-link">
+            View all orders
+          </Link>
         </div>
-        <div className="card">
-          <div className="label">Total Orders</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700 }}>{totalOrders}</div>
-          <div style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>All time fulfillment</div>
-        </div>
-        <div className="card">
-          <div className="label">Active Products</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700 }}>{totalProducts || 0}</div>
-          <div style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>In your store catalogue</div>
-        </div>
-        <div className="card">
-          <div className="label">Total User Accounts</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700 }}>{authUsersCount}</div>
-          <div style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: 'var(--text-secondary)' }}>Registered via Supabase Auth</div>
-        </div>
-      </div>
 
-      <section>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.25rem' }}>Recent Orders</h2>
-          <Link href="/admin/orders" style={{ fontSize: '0.875rem', color: 'var(--accent-primary)', textDecoration: 'none' }}>View All Orders →</Link>
-        </div>
-        
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div className="table-wrapper">
-            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-              <thead>
+        <div className="table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.length === 0 ? (
                 <tr>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Order ID</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Date</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Status</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', textAlign: 'right' }}>Amount</th>
+                  <td colSpan={4}>
+                    <div className="empty-state">No orders have been placed yet.</div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {recentOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No orders placed yet.</td>
+              ) : (
+                recentOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>...{order.id.split('-').pop()}</td>
+                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <span className={getStatusClass(order.status)}>{order.status}</span>
+                    </td>
+                    <td>Rs. {Number(order.total_amount).toFixed(2)}</td>
                   </tr>
-                ) : (
-                  recentOrders.map((order) => (
-                    <tr key={order.id}>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontSize: '0.75rem' }}>...{order.id.split('-').pop()}</td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                        {new Date(order.created_at).toLocaleDateString()}
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                        <span className="badge" style={{ backgroundColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.2)' : 'rgba(99, 102, 241, 0.2)', color: order.status === 'Pending' ? '#eab308' : 'var(--accent-primary)', borderColor: order.status === 'Pending' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(99, 102, 241, 0.3)' }}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', textAlign: 'right', fontWeight: 600 }}>
-                        ₹{Number(order.total_amount).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
-    </>
+    </div>
   );
 }

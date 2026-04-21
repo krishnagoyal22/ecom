@@ -2,7 +2,15 @@
 
 import { useCart } from '@/context/CartContext';
 
-export default function AddToCartButton({ product }: { product: any }) {
+type CartProduct = {
+  id: string;
+  title: string;
+  price: number | string;
+  image_url?: string | null;
+  stock_quantity: number;
+};
+
+export default function AddToCartButton({ product }: { product: CartProduct }) {
   const { addToCart } = useCart();
   const isOutOfStock = product.stock_quantity === 0;
 
@@ -17,7 +25,7 @@ export default function AddToCartButton({ product }: { product: any }) {
         addToCart(product);
       }}
     >
-      {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+      {isOutOfStock ? 'Sold out' : 'Add to cart'}
     </button>
   );
 }

@@ -1,95 +1,125 @@
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 import { updateUserRole } from './actions';
 
+type Role = 'admin' | 'customer';
+
+type AdminUserRow = {
+  id: string;
+  email: string | null;
+  created_at: string;
+  role: Role;
+};
+
+function getRoleClass(email: string | null, role: Role) {
+  if (email === 'goyalkrishna006@gmail.com') {
+    return 'status-pill status-owner';
+  }
+  return role === 'admin' ? 'status-pill status-admin' : 'status-pill status-customer';
+}
+
 export default async function AdminUsersPage() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  let usersWithRoles: any[] = [];
-  let authError = null;
+  let usersWithRoles: AdminUserRow[] = [];
+  let authError: Error | null = null;
 
   if (!supabaseServiceKey || supabaseServiceKey === 'your-service-role-key-here') {
-    authError = new Error("SUPABASE_SERVICE_ROLE_KEY is missing from .env.local. You need this to fetch the auth list natively.");
+    authError = new Error(
+      'SUPABASE_SERVICE_ROLE_KEY is missing from .env.local. Add it to fetch auth users in the admin panel.'
+    );
   } else {
     const supabaseAdmin = createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
-    
-    // Fetch auth users
     const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.listUsers();
-    
-    // Fetch profiles map
     const { data: profiles, error: profileErr } = await supabaseAdmin.from('profiles').select('id, role');
 
     if (authErr) {
       authError = authErr;
+    } else if (profileErr) {
+      authError = new Error(profileErr.message);
     } else {
-      const profileMap = new Map(profiles?.map(p => [p.id, p.role]) || []);
-      
-      usersWithRoles = authData.users.map((u) => ({
-        ...u,
-        role: profileMap.get(u.id) || 'customer'
+      const profileMap = new Map(
+        (profiles || []).map((profile) => [profile.id, (profile.role === 'admin' ? 'admin' : 'customer') as Role])
+      );
+
+      usersWithRoles = authData.users.map((user) => ({
+        id: user.id,
+        email: user.email ?? null,
+        created_at: user.created_at,
+        role: profileMap.get(user.id) || 'customer',
       }));
     }
   }
 
   return (
-    <>
-      <div className="header fade-in">
-        <h1>User Management</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Assign administrative permissions and view registered accounts.</p>
-      </div>
+    <div className="admin-panel fade-in">
+      <section className="page-head">
+        <div className="page-head-copy">
+          <span className="eyebrow">Users</span>
+          <h1>Role management</h1>
+          <p>Review registered accounts and promote trusted users without breaking mobile layout.</p>
+        </div>
+      </section>
 
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      <section className="panel-card">
         {authError ? (
-          <div style={{ color: 'var(--danger)', padding: '2rem' }}>
-            <p style={{ fontWeight: 600, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Could not fetch users directly from Auth API.</p>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Error details: {authError.message}</p>
+          <div className="status-message status-error">
+            <strong>Could not fetch users from Supabase Auth.</strong>
+            <div style={{ marginTop: '0.35rem' }}>{authError.message}</div>
           </div>
         ) : (
           <div className="table-wrapper">
-            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Email</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Status</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>Joined</th>
-                  <th style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {usersWithRoles.length === 0 ? (
                   <tr>
-                    <td colSpan={4} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No registered users found.</td>
+                    <td colSpan={4}>
+                      <div className="empty-state">No registered users found.</div>
+                    </td>
                   </tr>
                 ) : (
-                  usersWithRoles.map((u) => (
-                    <tr key={u.id}>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontWeight: 500 }}>
-                        {u.email} {u.email === 'goyalkrishna006@gmail.com' && <span style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Owner)</span>}
+                  usersWithRoles.map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        {user.email || 'Unknown email'}
+                        {user.email === 'goyalkrishna006@gmail.com' ? (
+                          <span style={{ marginLeft: '0.5rem', color: 'var(--accent-primary)', fontSize: '0.8rem' }}>
+                            Owner
+                          </span>
+                        ) : null}
                       </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                         <span className="badge" style={{ 
-                            backgroundColor: u.email === 'goyalkrishna006@gmail.com' ? 'rgba(234, 179, 8, 0.2)' : u.role === 'admin' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)', 
-                            color: u.email === 'goyalkrishna006@gmail.com' ? '#eab308' : u.role === 'admin' ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                            borderColor: u.email === 'goyalkrishna006@gmail.com' ? 'rgba(234, 179, 8, 0.3)' : 'transparent'
-                          }}>
-                           {u.email === 'goyalkrishna006@gmail.com' ? 'OWNER' : u.role.toUpperCase()}
-                         </span>
+                      <td>
+                        <span className={getRoleClass(user.email, user.role)}>
+                          {user.email === 'goyalkrishna006@gmail.com' ? 'Owner' : user.role}
+                        </span>
                       </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                         {new Date(u.created_at).toLocaleDateString()}
-                      </td>
-                      <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>
-                         {u.email !== 'goyalkrishna006@gmail.com' ? (
-                           <form action={updateUserRole} style={{ display: 'inline-block' }}>
-                              <input type="hidden" name="id" value={u.id} />
-                              <input type="hidden" name="role" value={u.role === 'admin' ? 'customer' : 'admin'} />
-                              <button type="submit" className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>
-                                {u.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
-                              </button>
-                           </form>
-                         ) : (
-                           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Immutable</span>
-                         )}
+                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                      <td>
+                        {user.email !== 'goyalkrishna006@gmail.com' ? (
+                          <form action={updateUserRole}>
+                            <input type="hidden" name="id" value={user.id} />
+                            <input
+                              type="hidden"
+                              name="role"
+                              value={user.role === 'admin' ? 'customer' : 'admin'}
+                            />
+                            <button type="submit" className="btn btn-secondary">
+                              {user.role === 'admin' ? 'Revoke admin' : 'Make admin'}
+                            </button>
+                          </form>
+                        ) : (
+                          <span className="label" style={{ marginBottom: 0 }}>
+                            Immutable
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -98,7 +128,7 @@ export default async function AdminUsersPage() {
             </table>
           </div>
         )}
-      </div>
-    </>
+      </section>
+    </div>
   );
 }
