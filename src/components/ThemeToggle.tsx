@@ -4,21 +4,34 @@ import { useEffect, useSyncExternalStore } from 'react';
 
 type ThemeMode = 'light' | 'dark';
 type ThemeListener = () => void;
+type LegacyMediaQueryList = MediaQueryList & {
+  addListener?: (listener: ThemeListener) => void;
+  removeListener?: (listener: ThemeListener) => void;
+};
 
 const themeListeners = new Set<ThemeListener>();
 
 function applyTheme(theme: ThemeMode) {
   document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+}
+
+function getStoredTheme(): ThemeMode | null {
+  try {
+    const storedTheme = window.localStorage.getItem('theme');
+    return storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : null;
+  } catch {
+    return null;
+  }
 }
 
 function getPreferredTheme(): ThemeMode {
-  const storedTheme = window.localStorage.getItem('theme');
-
-  if (storedTheme === 'light' || storedTheme === 'dark') {
+  const storedTheme = getStoredTheme();
+  if (storedTheme) {
     return storedTheme;
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function getServerThemeSnapshot(): ThemeMode {
@@ -28,22 +41,37 @@ function getServerThemeSnapshot(): ThemeMode {
 function subscribeToThemeChanges(listener: ThemeListener) {
   themeListeners.add(listener);
 
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)') as LegacyMediaQueryList;
   const notify = () => listener();
 
-  mediaQuery.addEventListener('change', notify);
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', notify);
+  } else {
+    mediaQuery.addListener?.(notify);
+  }
+
   window.addEventListener('storage', notify);
 
   return () => {
     themeListeners.delete(listener);
-    mediaQuery.removeEventListener('change', notify);
+
+    if (typeof mediaQuery.removeEventListener === 'function') {
+      mediaQuery.removeEventListener('change', notify);
+    } else {
+      mediaQuery.removeListener?.(notify);
+    }
+
     window.removeEventListener('storage', notify);
   };
 }
 
 function setStoredTheme(theme: ThemeMode) {
   applyTheme(theme);
-  window.localStorage.setItem('theme', theme);
+  try {
+    window.localStorage.setItem('theme', theme);
+  } catch {
+    // The visual theme should still change when storage is unavailable.
+  }
   themeListeners.forEach((listener) => listener());
 }
 
