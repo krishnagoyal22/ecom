@@ -85,6 +85,7 @@ export default async function Home() {
                 <p>
                   The visual refresh centers on charm, clarity, and more reusable frontend structure.
                 </p>
+                
               </div>
             </div>
 

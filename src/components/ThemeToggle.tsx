@@ -1,26 +1,58 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 
 type ThemeMode = 'light' | 'dark';
+type ThemeListener = () => void;
+
+const themeListeners = new Set<ThemeListener>();
 
 function applyTheme(theme: ThemeMode) {
   document.documentElement.dataset.theme = theme;
 }
 
+function getPreferredTheme(): ThemeMode {
+  const storedTheme = window.localStorage.getItem('theme');
+
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    return storedTheme;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return 'light';
+}
+
+function subscribeToThemeChanges(listener: ThemeListener) {
+  themeListeners.add(listener);
+
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const notify = () => listener();
+
+  mediaQuery.addEventListener('change', notify);
+  window.addEventListener('storage', notify);
+
+  return () => {
+    themeListeners.delete(listener);
+    mediaQuery.removeEventListener('change', notify);
+    window.removeEventListener('storage', notify);
+  };
+}
+
+function setStoredTheme(theme: ThemeMode) {
+  applyTheme(theme);
+  window.localStorage.setItem('theme', theme);
+  themeListeners.forEach((listener) => listener());
+}
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window === 'undefined') {
-      return 'light';
-    }
-
-    const storedTheme = window.localStorage.getItem('theme') as ThemeMode | null;
-    if (storedTheme) {
-      return storedTheme;
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
+  const theme = useSyncExternalStore(
+    subscribeToThemeChanges,
+    getPreferredTheme,
+    getServerThemeSnapshot,
+  );
 
   useEffect(() => {
     applyTheme(theme);
@@ -28,9 +60,7 @@ export default function ThemeToggle() {
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    applyTheme(nextTheme);
-    window.localStorage.setItem('theme', nextTheme);
-    setTheme(nextTheme);
+    setStoredTheme(nextTheme);
   };
 
   return (
