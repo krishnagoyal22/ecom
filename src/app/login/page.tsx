@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
@@ -25,63 +26,99 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
-      router.push('/customer');
+      return;
     }
+
+    router.push('/customer');
   };
 
   return (
     <div className="auth-wrapper">
-      <div className="card auth-form">
-        <h2 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Welcome Back</h2>
-        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-          Sign in to access your account
-        </p>
+      <div className="auth-grid fade-in">
+        <section className="card auth-showcase">
+          <span className="eyebrow">Welcome back</span>
+          <h1>Pick up where your cart left off.</h1>
+          <p>
+            Sign in to browse the live catalog, revisit saved picks, and move through the
+            storefront with a little more style than the usual dashboard login.
+          </p>
 
-        {error && (
-          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '0.75rem', borderRadius: '0.5rem', fontSize: '0.875rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-            {error}
+          <div className="auth-feature-list">
+            <div className="auth-feature-item">
+              <span className="badge badge-warm">01</span>
+              <div>
+                <strong>Curated storefront</strong>
+                <p>Browse products by category with a smoother, more visual shopping flow.</p>
+              </div>
+            </div>
+            <div className="auth-feature-item">
+              <span className="badge">02</span>
+              <div>
+                <strong>Quick account access</strong>
+                <p>Jump straight into cart and orders without extra clutter.</p>
+              </div>
+            </div>
+            <div className="auth-feature-item">
+              <span className="badge" style={{ background: 'rgba(221, 94, 137, 0.12)', borderColor: 'rgba(221, 94, 137, 0.18)', color: '#a93961' }}>
+                03
+              </span>
+              <div>
+                <strong>Playful visual rhythm</strong>
+                <p>Warm surfaces, editorial type, and softer panels make the app feel alive.</p>
+              </div>
+            </div>
           </div>
-        )}
+        </section>
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label className="label" htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="admin@example.com"
-              className="input-field"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        <section className="card auth-form">
+          <div className="auth-form-header">
+            <span className="eyebrow">Account access</span>
+            <h2>Sign in</h2>
+            <p>Use your email and password to enter the customer storefront.</p>
           </div>
 
-          <div>
-            <label className="label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          {error && <div className="status-message status-error">{error}</div>}
 
-          <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '0.5rem', height: '2.5rem' }}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+          <form onSubmit={handleLogin} className="auth-stack">
+            <div>
+              <label className="label" htmlFor="email">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="hello@sunroom.shop"
+                className="input-field"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-        <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.875rem' }}>
-          <span style={{ color: 'var(--text-secondary)' }}>Don't have an account? </span>
-          <a href="/signup" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }}>
-            Sign up
-          </a>
-        </div>
+            <div>
+              <label className="label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                className="input-field"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Signing in...' : 'Enter store'}
+            </button>
+          </form>
+
+          <p className="auth-footnote">
+            New here? <Link href="/signup">Create an account</Link>
+          </p>
+        </section>
       </div>
     </div>
   );

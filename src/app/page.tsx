@@ -3,7 +3,9 @@ import { createClient } from '@/utils/supabase/server';
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <main className="home-page">
@@ -83,7 +85,7 @@ export default async function Home() {
                 <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-          )}
+          </div>
         </div>
 
         <div className="hero-stats" aria-label="Store statistics">
