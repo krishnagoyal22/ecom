@@ -89,6 +89,38 @@ export async function syncProductsFromImageBucket() {
     throw new Error(`Failed to list image bucket: ${rootError.message}`);
   }
 
+  const bucketCategories = (rootItems || [])
+    .filter((item) => !item.id)
+    .map((item) => item.name);
+
+  let deleted = 0;
+  if (bucketCategories.length > 0) {
+    const { data: productsOutsideBucketCategories, error: outsideCategoriesError } = await supabase
+      .from('products')
+      .select('id, category');
+
+    if (outsideCategoriesError) {
+      throw new Error(`Failed to compare product categories: ${outsideCategoriesError.message}`);
+    }
+
+    const productIdsToDelete = (productsOutsideBucketCategories || [])
+      .filter((product) => !product.category || !bucketCategories.includes(product.category))
+      .map((product) => product.id);
+
+    if (productIdsToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('products')
+        .delete()
+        .in('id', productIdsToDelete);
+
+      if (deleteError) {
+        throw new Error(`Failed to delete products outside bucket categories: ${deleteError.message}`);
+      }
+
+      deleted = productIdsToDelete.length;
+    }
+  }
+
   const { data: existingProducts, error: existingProductsError } = await supabase
     .from('products')
     .select('image_url');
@@ -105,12 +137,7 @@ export async function syncProductsFromImageBucket() {
 
   const productsToInsert = [];
 
-  for (const item of rootItems || []) {
-    if (item.id) {
-      continue;
-    }
-
-    const category = item.name;
+  for (const category of bucketCategories) {
     const { data: files, error: filesError } = await supabase.storage
       .from(PRODUCT_IMAGE_BUCKET)
       .list(category, {
@@ -147,7 +174,7 @@ export async function syncProductsFromImageBucket() {
   }
 
   if (productsToInsert.length === 0) {
-    return { inserted: 0 };
+    return { inserted: 0, deleted };
   }
 
   const { error: insertError } = await supabase.from('products').insert(productsToInsert);
@@ -156,7 +183,7 @@ export async function syncProductsFromImageBucket() {
     throw new Error(`Failed to add bucket products: ${insertError.message}`);
   }
 
-  return { inserted: productsToInsert.length };
+  return { inserted: productsToInsert.length, deleted };
 }
 
 export async function addProduct(formData: FormData) {
