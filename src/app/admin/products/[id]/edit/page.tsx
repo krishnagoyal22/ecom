@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { updateProduct } from '../../actions';
 
 export default async function EditProductPage({
   params,
@@ -12,7 +11,37 @@ export default async function EditProductPage({
   const id = resolvedParams.id;
 
   const supabase = await createClient();
-  const { data: product } = await supabase.from('products').select('*').eq('id', id).single();
+  let product = null;
+  let fetchError = '';
+
+  try {
+    const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+    product = data;
+    fetchError = error?.message || '';
+  } catch (error) {
+    fetchError = error instanceof Error ? error.message : 'Failed to fetch product details.';
+  }
+
+  if (fetchError) {
+    return (
+      <div className="admin-form-shell admin-panel fade-in">
+        <section className="page-head">
+          <div className="page-head-copy">
+            <Link href="/admin/products" className="subtle-link">
+              Back to products
+            </Link>
+            <h2>Edit product</h2>
+          </div>
+        </section>
+
+        <section className="panel-card">
+          <div className="info-banner">
+            Could not fetch this product from Supabase. Error: {fetchError}
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
@@ -31,8 +60,10 @@ export default async function EditProductPage({
       </section>
 
       <section className="panel-card">
-        <form action={updateProduct} className="responsive-stack">
+        <form action="/admin/products/submit" method="post" encType="multipart/form-data" className="responsive-stack">
+          <input type="hidden" name="mode" value="edit" />
           <input type="hidden" name="id" value={product.id} />
+          <input type="hidden" name="existing_image_url" value={product.image_url || ''} />
 
           <div className="form-grid">
             <div>
@@ -56,46 +87,16 @@ export default async function EditProductPage({
             </div>
           </div>
 
-          <div className="form-grid">
-            <div>
-              <label className="label" htmlFor="price">
-                Price (Rs.)
-              </label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                step="0.01"
-                className="input-field"
-                required
-                defaultValue={product.price}
-              />
-            </div>
-            <div>
-              <label className="label" htmlFor="stock_quantity">
-                Stock quantity
-              </label>
-              <input
-                id="stock_quantity"
-                name="stock_quantity"
-                type="number"
-                className="input-field"
-                required
-                defaultValue={product.stock_quantity}
-              />
-            </div>
-          </div>
-
           <div>
-            <label className="label" htmlFor="image_url">
-              Image URL
+            <label className="label" htmlFor="image">
+              Replace product image
             </label>
             <input
-              id="image_url"
-              name="image_url"
-              type="url"
+              id="image"
+              name="image"
+              type="file"
               className="input-field"
-              defaultValue={product.image_url || ''}
+              accept="image/*"
             />
           </div>
 
@@ -107,7 +108,6 @@ export default async function EditProductPage({
               id="description"
               name="description"
               className="input-field textarea-field"
-              required
               defaultValue={product.description || ''}
             />
           </div>

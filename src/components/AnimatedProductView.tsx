@@ -4,15 +4,13 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import AddToCartButton from '@/components/AddToCartButton';
+import WishlistButton from '@/components/WishlistButton';
 
 type ProductDetail = {
   id: string;
   title: string;
   description: string | null;
   category: string | null;
-  price: number | string;
-  stock_quantity: number;
   image_url?: string | null;
 };
 
@@ -58,6 +56,7 @@ export default function AnimatedProductView({ product }: { product: ProductDetai
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 960px) 100vw, 50vw"
             priority
+            unoptimized
           />
         ) : (
           <span>No image available</span>
@@ -67,7 +66,6 @@ export default function AnimatedProductView({ product }: { product: ProductDetai
       <div className="product-detail-copy">
         <span className="product-detail-item badge">{product.category || 'Standard'}</span>
         <h1 className="product-detail-item product-detail-title">{product.title}</h1>
-        <p className="product-detail-item product-detail-price">Rs. {Number(product.price).toFixed(2)}</p>
 
         <div className="product-detail-item product-detail-block">
           <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Description</h3>
@@ -76,20 +74,8 @@ export default function AnimatedProductView({ product }: { product: ProductDetai
           </p>
         </div>
 
-        <div className="product-detail-item">
-          <span
-            className={product.stock_quantity > 0 ? 'badge badge-warm' : 'badge badge-danger'}
-          >
-            {product.stock_quantity > 5
-              ? 'In stock'
-              : product.stock_quantity > 0
-                ? `Only ${product.stock_quantity} left`
-                : 'Out of stock'}
-          </span>
-        </div>
-
         <div className="product-detail-item" style={{ maxWidth: '260px' }}>
-          <AddToCartButton product={product} />
+          <WishlistButton product={product} />
         </div>
       </div>
     </div>

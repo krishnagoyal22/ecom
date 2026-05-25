@@ -1,9 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
-import { deleteProduct } from './actions';
+import { deleteProduct, syncProductsFromImageBucket } from './actions';
 
 export default async function AdminProductsPage() {
+  let syncMessage = '';
+  try {
+    const result = await syncProductsFromImageBucket();
+    syncMessage =
+      result.inserted > 0
+        ? `Synced ${result.inserted} product${result.inserted === 1 ? '' : 's'} from product-images.`
+        : '';
+  } catch (error) {
+    syncMessage = error instanceof Error ? error.message : 'Could not sync products from product-images.';
+  }
+
   const supabase = await createClient();
   const { data: products } = await supabase
     .from('products')
@@ -16,12 +27,14 @@ export default async function AdminProductsPage() {
         <div className="page-head-copy">
           <span className="eyebrow">Products</span>
           <h1>Catalog management</h1>
-          <p>Edit pricing, images, and stock without the admin layout collapsing on smaller screens.</p>
+          <p>Edit product details and images without the admin layout collapsing on smaller screens.</p>
         </div>
         <Link href="/admin/products/new" className="btn btn-primary">
           Add product
         </Link>
       </section>
+
+      {syncMessage ? <div className="info-banner">{syncMessage}</div> : null}
 
       <section className="panel-card">
         <div className="table-wrapper">
@@ -31,15 +44,13 @@ export default async function AdminProductsPage() {
                 <th>Image</th>
                 <th>Title</th>
                 <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {!products || products.length === 0 ? (
                 <tr>
-                  <td colSpan={6}>
+                  <td colSpan={4}>
                     <div className="empty-state">No products found yet. Add your first item to populate the storefront.</div>
                   </td>
                 </tr>
@@ -55,6 +66,7 @@ export default async function AdminProductsPage() {
                             fill
                             style={{ objectFit: 'cover' }}
                             sizes="56px"
+                            unoptimized
                           />
                         ) : (
                           'No img'
@@ -64,10 +76,6 @@ export default async function AdminProductsPage() {
                     <td>{product.title}</td>
                     <td>
                       <span className="badge">{product.category || 'N/A'}</span>
-                    </td>
-                    <td>Rs. {Number(product.price).toFixed(2)}</td>
-                    <td style={{ color: product.stock_quantity > 0 ? 'inherit' : 'var(--danger)' }}>
-                      {product.stock_quantity}
                     </td>
                     <td>
                       <div className="action-row">

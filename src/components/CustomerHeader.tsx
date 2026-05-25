@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { createClient } from '@/utils/supabase/client';
 
 export default function CustomerHeader({
@@ -15,7 +15,7 @@ export default function CustomerHeader({
   userEmail: string | undefined;
   isAdmin?: boolean;
 }) {
-  const { totalItems } = useCart();
+  const { totalItems } = useWishlist();
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
 
@@ -46,11 +46,8 @@ export default function CustomerHeader({
           <Link href="/customer" className="nav-link">
             Shop
           </Link>
-          <Link href="/customer/orders" className="nav-link">
-            Orders
-          </Link>
-          <Link href="/customer/cart" className="nav-link">
-            Cart
+          <Link href="/customer/wishlist" className="nav-link">
+            Wishlist
             {totalItems > 0 ? <span className="cart-badge">{totalItems}</span> : null}
           </Link>
           {isAdmin ? (

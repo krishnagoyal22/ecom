@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import CustomerHeader from '@/components/CustomerHeader';
-import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 import { createClient } from '@/utils/supabase/server';
 
 export default async function CustomerLayout({
@@ -27,11 +27,11 @@ export default async function CustomerLayout({
   const isAdmin = user.email === 'goyalkrishna006@gmail.com' || profile?.role === 'admin';
 
   return (
-    <CartProvider>
+    <WishlistProvider>
       <div className="customer-shell">
         <CustomerHeader userEmail={user.email} isAdmin={isAdmin} />
         <main className="container store-main">{children}</main>
       </div>
-    </CartProvider>
+    </WishlistProvider>
   );
 }

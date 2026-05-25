@@ -62,9 +62,6 @@ export default async function AdminLayout({
           >
             Products
           </Link>
-          <Link href="/admin/orders" className="btn btn-secondary sidebar-link">
-            Orders
-          </Link>
           <Link href="/admin/users" className="btn btn-secondary sidebar-link">
             Users
           </Link>

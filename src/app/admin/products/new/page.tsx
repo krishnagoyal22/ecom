@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { addProduct } from '../actions';
 
 export default function NewProductPage() {
   return (
@@ -15,7 +14,8 @@ export default function NewProductPage() {
       </section>
 
       <section className="panel-card">
-        <form action={addProduct} className="responsive-stack">
+        <form action="/admin/products/submit" method="post" encType="multipart/form-data" className="responsive-stack">
+          <input type="hidden" name="mode" value="new" />
           <div className="form-grid">
             <div>
               <label className="label" htmlFor="title">
@@ -45,31 +45,16 @@ export default function NewProductPage() {
             </div>
           </div>
 
-          <div className="form-grid">
-            <div>
-              <label className="label" htmlFor="price">
-                Price (Rs.)
-              </label>
-              <input id="price" name="price" type="number" step="0.01" className="input-field" required />
-            </div>
-            <div>
-              <label className="label" htmlFor="stock_quantity">
-                Stock quantity
-              </label>
-              <input id="stock_quantity" name="stock_quantity" type="number" className="input-field" required />
-            </div>
-          </div>
-
           <div>
-            <label className="label" htmlFor="image_url">
-              Image URL
+            <label className="label" htmlFor="image">
+              Product image
             </label>
             <input
-              id="image_url"
-              name="image_url"
-              type="url"
+              id="image"
+              name="image"
+              type="file"
               className="input-field"
-              placeholder="https://example.com/image.jpg"
+              accept="image/*"
             />
           </div>
 
@@ -81,7 +66,6 @@ export default function NewProductPage() {
               id="description"
               name="description"
               className="input-field textarea-field"
-              required
               placeholder="Describe the product, materials, highlights, and why it belongs in the collection."
             />
           </div>
