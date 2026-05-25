@@ -16,6 +16,7 @@ type WishlistContextType = {
   removeFromWishlist: (id: string) => void;
   isWishlisted: (id: string) => boolean;
   totalItems: number;
+  isHydrated: boolean;
 };
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -44,6 +45,12 @@ export function WishlistProvider({
     return getStoredWishlist(storageKey);
   });
   const [toast, setToast] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setIsHydrated(true), 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify(items));
@@ -78,8 +85,9 @@ export function WishlistProvider({
       removeFromWishlist,
       isWishlisted: (id: string) => items.some((item) => item.id === id),
       totalItems: items.length,
+      isHydrated,
     }),
-    [items]
+    [isHydrated, items]
   );
 
   return (
