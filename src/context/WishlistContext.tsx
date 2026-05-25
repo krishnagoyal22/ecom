@@ -20,9 +20,34 @@ type WishlistContextType = {
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
-export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>([]);
+function getStoredWishlist(storageKey: string) {
+  try {
+    const storedItems = window.localStorage.getItem(storageKey);
+    if (!storedItems) return [];
+
+    const parsedItems = JSON.parse(storedItems);
+    return Array.isArray(parsedItems) ? (parsedItems as WishlistItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function WishlistProvider({
+  children,
+  storageKey,
+}: {
+  children: React.ReactNode;
+  storageKey: string;
+}) {
+  const [items, setItems] = useState<WishlistItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    return getStoredWishlist(storageKey);
+  });
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items, storageKey]);
 
   useEffect(() => {
     if (!toast) return;

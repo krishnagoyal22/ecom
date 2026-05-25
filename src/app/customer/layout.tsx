@@ -27,7 +27,7 @@ export default async function CustomerLayout({
   const isAdmin = user.email === 'goyalkrishna006@gmail.com' || profile?.role === 'admin';
 
   return (
-    <WishlistProvider>
+    <WishlistProvider storageKey={`wishlist:${user.id}`}>
       <div className="customer-shell">
         <CustomerHeader userEmail={user.email} isAdmin={isAdmin} />
         <main className="container store-main">{children}</main>
