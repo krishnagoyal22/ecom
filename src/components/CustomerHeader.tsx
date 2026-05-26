@@ -15,7 +15,7 @@ export default function CustomerHeader({
   userEmail: string | undefined;
   isAdmin?: boolean;
 }) {
-  const { totalItems } = useWishlist();
+  const { isHydrated, totalItems } = useWishlist();
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
 
@@ -48,7 +48,7 @@ export default function CustomerHeader({
           </Link>
           <Link href="/customer/wishlist" className="nav-link">
             Wishlist
-            {totalItems > 0 ? <span className="cart-badge">{totalItems}</span> : null}
+            {isHydrated && totalItems > 0 ? <span className="cart-badge">{totalItems}</span> : null}
           </Link>
           {isAdmin ? (
             <Link href="/admin" className="nav-link" style={{ color: 'var(--accent-primary)' }}>

@@ -8,8 +8,8 @@ export default async function AdminProductsPage() {
   try {
     const result = await syncProductsFromImageBucket();
     syncMessage =
-      result.inserted > 0
-        ? `Synced ${result.inserted} product${result.inserted === 1 ? '' : 's'} from product-images.`
+      result.inserted > 0 || result.deleted > 0
+        ? `Synced ${result.inserted} product${result.inserted === 1 ? '' : 's'} from product-images and deleted ${result.deleted} product${result.deleted === 1 ? '' : 's'} outside bucket categories.`
         : '';
   } catch (error) {
     syncMessage = error instanceof Error ? error.message : 'Could not sync products from product-images.';

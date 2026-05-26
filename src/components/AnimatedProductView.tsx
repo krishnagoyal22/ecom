@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import WishlistButton from '@/components/WishlistButton';
@@ -18,6 +18,7 @@ gsap.registerPlugin(useGSAP);
 
 export default function AnimatedProductView({ product }: { product: ProductDetail }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   useGSAP(() => {
     gsap.from(containerRef.current, {
@@ -45,19 +46,48 @@ export default function AnimatedProductView({ product }: { product: ProductDetai
     });
   }, { scope: containerRef });
 
+  useEffect(() => {
+    if (!isImageZoomed) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsImageZoomed(false);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isImageZoomed]);
+
   return (
     <div ref={containerRef} className="card product-detail-shell">
       <div className="product-image-section product-detail-media">
         {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.title}
-            fill
-            style={{ objectFit: 'cover' }}
-            sizes="(max-width: 960px) 100vw, 50vw"
-            priority
-            unoptimized
-          />
+          <button
+            aria-label={`View ${product.title} fullscreen`}
+            className="product-detail-zoom-trigger"
+            onClick={() => setIsImageZoomed(true)}
+            type="button"
+          >
+            <Image
+              src={product.image_url}
+              alt={product.title}
+              fill
+              style={{ objectFit: 'cover' }}
+              sizes="(max-width: 960px) 100vw, 50vw"
+              priority
+              unoptimized
+            />
+          </button>
         ) : (
           <span>No image available</span>
         )}
@@ -78,6 +108,39 @@ export default function AnimatedProductView({ product }: { product: ProductDetai
           <WishlistButton product={product} />
         </div>
       </div>
+
+      {product.image_url && isImageZoomed ? (
+        <div
+          aria-label={`${product.title} fullscreen image`}
+          aria-modal="true"
+          className="product-image-lightbox"
+          onClick={() => setIsImageZoomed(false)}
+          role="dialog"
+        >
+          <button
+            aria-label="Close fullscreen image"
+            className="product-image-lightbox-close"
+            onClick={() => setIsImageZoomed(false)}
+            type="button"
+          >
+            Close
+          </button>
+          <div
+            className="product-image-lightbox-frame"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={product.image_url}
+              alt={product.title}
+              fill
+              sizes="100vw"
+              style={{ objectFit: 'contain' }}
+              priority
+              unoptimized
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
