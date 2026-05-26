@@ -87,7 +87,7 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-                placeholder="hello@sunroom.shop"
+                placeholder="hello@gmail.com"
                 className="input-field"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
