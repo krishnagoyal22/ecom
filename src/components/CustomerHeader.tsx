@@ -41,10 +41,10 @@ export default function CustomerHeader({
         <div className="nav-links">
           <Link href="/customer" className="brand-mark">
             <span className="brand-mark-badge" />
-            <span>Sunroom Market</span>
+            <span>KottiarCatalog</span>
           </Link>
           <Link href="/customer" className="nav-link">
-            Shop
+            Catalog
           </Link>
           <Link href="/customer/wishlist" className="nav-link">
             Wishlist
@@ -58,10 +58,24 @@ export default function CustomerHeader({
         </div>
 
         <div className="nav-actions">
-          {userEmail ? <span className="nav-meta">{userEmail}</span> : null}
-          <button onClick={handleSignOut} className="btn btn-secondary" type="button">
-            Sign out
-          </button>
+          {userEmail ? (
+            <>
+              <span className="nav-meta">{userEmail}</span>
+              <button onClick={handleSignOut} className="btn btn-secondary" type="button">
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="nav-meta">Guest browsing</span>
+              <Link href="/login" className="btn btn-secondary">
+                Sign in
+              </Link>
+              <Link href="/signup" className="btn btn-primary">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

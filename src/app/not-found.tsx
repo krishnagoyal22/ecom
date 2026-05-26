@@ -13,7 +13,7 @@ export default function NotFound() {
           We couldn&apos;t find the page or product you were looking for. It may have been moved or removed.
         </p>
         <Link href="/customer" className="btn btn-primary">
-          Return to storefront
+          Return to catalog
         </Link>
       </div>
     </div>

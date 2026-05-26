@@ -44,10 +44,10 @@ export default async function AdminLayout({
           <span className="eyebrow">Admin workspace</span>
           <div className="brand-mark">
             <span className="brand-mark-badge" />
-            <span>Sunroom Control</span>
+            <span>KottiarCatalog Control</span>
           </div>
           <p>
-            Manage products, fulfillment, and user roles with a cleaner
+            Manage catalog items, fulfillment, and user roles with a cleaner
             responsive control panel.
           </p>
         </div>
@@ -66,7 +66,7 @@ export default async function AdminLayout({
             Users
           </Link>
           <Link href="/customer" className="btn btn-ghost sidebar-link">
-            Back to storefront
+            Back to catalog
           </Link>
         </nav>
 

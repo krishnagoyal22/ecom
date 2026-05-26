@@ -51,7 +51,7 @@ export default async function AdminProductsPage() {
               {!products || products.length === 0 ? (
                 <tr>
                   <td colSpan={4}>
-                    <div className="empty-state">No products found yet. Add your first item to populate the storefront.</div>
+                    <div className="empty-state">No products found yet. Add your first item to populate the catalog.</div>
                   </td>
                 </tr>
               ) : (

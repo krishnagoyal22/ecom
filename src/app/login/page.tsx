@@ -37,18 +37,18 @@ export default function LoginPage() {
       <div className="auth-grid fade-in">
         <section className="card auth-showcase">
           <span className="eyebrow">Welcome back</span>
-          <h1>Pick up where your cart left off.</h1>
+          <h1>Return to KottiarCatalog.</h1>
           <p>
-            Sign in to browse the live catalog, revisit saved picks, and move through the
-            storefront with a little more style than the usual dashboard login.
+            Sign in to browse Kottiar bangle collections and revisit your saved
+            designs.
           </p>
 
           <div className="auth-feature-list">
             <div className="auth-feature-item">
               <span className="badge badge-warm">01</span>
               <div>
-                <strong>Curated storefront</strong>
-                <p>Browse products by category with a smoother, more visual shopping flow.</p>
+                <strong>Curated catalog</strong>
+                <p>Browse bangles by category with a smoother, more visual flow.</p>
               </div>
             </div>
             <div className="auth-feature-item">
@@ -63,8 +63,8 @@ export default function LoginPage() {
                 03
               </span>
               <div>
-                <strong>Playful visual rhythm</strong>
-                <p>Warm surfaces, editorial type, and softer panels make the app feel alive.</p>
+                <strong>Focused browsing</strong>
+                <p>Warm surfaces and clear sections keep attention on the designs.</p>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
           <div className="auth-form-header">
             <span className="eyebrow">Account access</span>
             <h2>Sign in</h2>
-            <p>Use your email and password to enter the customer storefront.</p>
+            <p>Use your email and password to enter KottiarCatalog.</p>
           </div>
 
           {error && <div className="status-message status-error">{error}</div>}
@@ -87,7 +87,7 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-                placeholder="hello@sunroom.shop"
+                placeholder="hello@kottiarcatalog.com"
                 className="input-field"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -111,8 +111,12 @@ export default function LoginPage() {
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Signing in...' : 'Enter store'}
+              {loading ? 'Signing in...' : 'Enter catalog'}
             </button>
+
+            <Link href="/customer" className="btn btn-secondary">
+              Continue as guest
+            </Link>
           </form>
 
           <p className="auth-footnote">

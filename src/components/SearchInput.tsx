@@ -26,14 +26,14 @@ export default function SearchInput() {
       </span>
       <input
         type="text"
-        placeholder="Search by title or description"
+        placeholder="Search bangles by name, finish, or style"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="input-field"
-        aria-label="Search products"
+        aria-label="Search Kottiar bangles"
       />
       <button type="submit" className="btn btn-primary">
-        Find products
+        Search catalog
       </button>
     </form>
   );
