@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
         <div className="panel-card-header">
           <div className="page-head-copy">
             <h2>Catalog tools</h2>
-            <p>Add new products, update existing listings, and keep storefront images fresh.</p>
+            <p>Add new products, update existing listings, and keep catalog images fresh.</p>
           </div>
           <Link href="/admin/products/new" className="subtle-link">
             Add product

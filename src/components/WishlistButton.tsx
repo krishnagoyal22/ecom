@@ -1,9 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useWishlist, type WishlistItem } from '@/context/WishlistContext';
 
 export default function WishlistButton({ product }: { product: WishlistItem }) {
-  const { addToWishlist, isWishlisted } = useWishlist();
+  const router = useRouter();
+  const { addToWishlist, isGuest, isWishlisted } = useWishlist();
   const active = isWishlisted(product.id);
 
   return (
@@ -12,6 +14,15 @@ export default function WishlistButton({ product }: { product: WishlistItem }) {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (isGuest) {
+          const shouldSignUp = window.confirm('Create an account to save bangles to your wishlist.');
+          if (shouldSignUp) {
+            router.push('/signup');
+          }
+          return;
+        }
+
         addToWishlist(product);
       }}
       type="button"

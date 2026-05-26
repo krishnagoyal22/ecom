@@ -90,7 +90,6 @@ function CategorySection({
         </div>
 
         <div className="category-actions">
-          <p>{products.length} products in this set</p>
           <button
             className="btn btn-secondary"
             onClick={() => setIsHidden((current) => !current)}
@@ -149,7 +148,7 @@ export default function AnimatedCatalog({
   return (
     <div ref={containerRef}>
       <div className="catalog-toolbar">
-        <span className="eyebrow">Explore by collection</span>
+        <span className="eyebrow">Browse by collection</span>
         <CategoryHamburger categories={categories} />
       </div>
 

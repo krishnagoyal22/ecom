@@ -17,6 +17,7 @@ type WishlistContextType = {
   isWishlisted: (id: string) => boolean;
   totalItems: number;
   isHydrated: boolean;
+  isGuest: boolean;
 };
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -35,9 +36,11 @@ function getStoredWishlist(storageKey: string) {
 
 export function WishlistProvider({
   children,
+  isGuest = false,
   storageKey,
 }: {
   children: React.ReactNode;
+  isGuest?: boolean;
   storageKey: string;
 }) {
   const [items, setItems] = useState<WishlistItem[]>(() => {
@@ -86,8 +89,9 @@ export function WishlistProvider({
       isWishlisted: (id: string) => items.some((item) => item.id === id),
       totalItems: items.length,
       isHydrated,
+      isGuest,
     }),
-    [isHydrated, items]
+    [isGuest, isHydrated, items]
   );
 
   return (

@@ -833,6 +833,23 @@ html[data-theme="dark"] .btn-secondary {
   line-height: 1.7;
 }
 
+.store-catalog-intro {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 2rem) 0 0.5rem;
+}
+
+.store-catalog-intro h1 {
+  max-width: 11ch;
+  font-size: clamp(3rem, 8vw, 5.6rem);
+}
+
+.store-catalog-intro p {
+  max-width: 42rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
 .store-kpis {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2086,6 +2103,20 @@ html[data-theme="dark"] td {
   overflow-x: hidden;
 }
 
+.kottiar-home {
+  background:
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 122, 89, 0.16),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 82% 28%,
+      rgba(43, 176, 168, 0.16),
+      transparent 26%
+    );
+}
+
 /* Ambient orbs */
 .orb {
   position: fixed;
@@ -2173,6 +2204,67 @@ html[data-theme="dark"] td {
   display: flex;
   gap: 0.75rem;
   align-items: center;
+}
+
+.kottiar-hero {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  padding: clamp(3rem, 8vw, 6rem) 0;
+}
+
+.kottiar-hero-copy {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.kottiar-hero h1 {
+  font-size: clamp(4rem, 11vw, 8rem);
+  line-height: 0.9;
+}
+
+.kottiar-hero p {
+  max-width: 38rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.75;
+}
+
+.kottiar-visual {
+  min-height: 28rem;
+  display: grid;
+  place-items: center;
+  justify-items: end;
+  transform: translateX(clamp(1rem, 4vw, 3rem));
+}
+
+.bangle-stack {
+  position: relative;
+  width: min(24rem, 72vw);
+  aspect-ratio: 1;
+}
+
+.bangle-stack span {
+  position: absolute;
+  inset: 12%;
+  border-radius: 999px;
+  border: clamp(1.6rem, 4vw, 2.6rem) solid rgba(247, 181, 56, 0.78);
+  box-shadow:
+    inset 0 0 0 1px rgba(77, 47, 35, 0.08),
+    0 28px 70px rgba(91, 54, 41, 0.14);
+}
+
+.bangle-stack span:nth-child(2) {
+  inset: 20% 5% 4% 21%;
+  border-color: rgba(255, 107, 74, 0.72);
+}
+
+.bangle-stack span:nth-child(3) {
+  inset: 4% 22% 20% 4%;
+  border-color: rgba(43, 176, 168, 0.58);
 }
 
 /* Button size variants */
@@ -2354,6 +2446,17 @@ html[data-theme="dark"] td {
 
 /* Responsive */
 @media (max-width: 900px) {
+  .kottiar-hero {
+    grid-template-columns: 1fr;
+    padding-top: 3rem;
+  }
+
+  .kottiar-visual {
+    min-height: 18rem;
+    justify-items: center;
+    transform: none;
+  }
+
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -4,12 +4,12 @@ import ThemeToggle from '@/components/ThemeToggle';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Premium Next.js E-Commerce',
-  description: 'Shop the latest premium products with next generation speed.',
+  title: 'KottiarCatalog',
+  description: 'Browse Kottiar creations and bangle collections.',
   openGraph: {
-    title: 'Premium Next.js E-Commerce',
-    description: 'Shop the latest premium products with next generation speed.',
-    siteName: 'Premium Next.js E-Commerce',
+    title: 'KottiarCatalog',
+    description: 'Browse Kottiar creations and bangle collections.',
+    siteName: 'KottiarCatalog',
     type: 'website',
   },
   robots: {
