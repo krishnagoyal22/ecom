@@ -98,11 +98,7 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-<<<<<<< HEAD
                 placeholder="hello@sunroom.shop"
-=======
-                placeholder="hello@kottiarcatalog.com"
->>>>>>> parent of ecfa85a (google auth only)
                 className="input-field"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
