@@ -2,13 +2,40 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import GoogleAuthButton from '@/components/GoogleAuthButton';
+import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
-  const [error] = useState<string | null>(() => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     return new URLSearchParams(window.location.search).get('error');
   });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    router.push('/customer');
+    router.refresh();
+  };
 
   return (
     <div className="auth-wrapper">
@@ -52,7 +79,7 @@ export default function LoginPage() {
           <div className="auth-form-header">
             <span className="eyebrow">Account access</span>
             <h2>Sign in</h2>
-            <p>Use Google to enter KottiarCatalog.</p>
+            <p>Use your email and password to enter KottiarCatalog.</p>
           </div>
 
           {error && <div className="status-message status-error">{error}</div>}
@@ -71,7 +98,7 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-                placeholder="hello@kottiarcatalog.com"
+                placeholder="hello@sunroom.shop"
                 className="input-field"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -98,9 +125,10 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Enter catalog'}
             </button>
 
-          <Link href="/customer" className="btn btn-secondary">
-            Continue as guest
-          </Link>
+            <Link href="/customer" className="btn btn-secondary">
+              Continue as guest
+            </Link>
+          </form>
 
           <p className="auth-footnote">
             New here? <Link href="/signup">Create an account</Link>
