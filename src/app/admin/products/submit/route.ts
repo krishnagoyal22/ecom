@@ -7,6 +7,11 @@ const PRODUCT_IMAGE_BUCKET = 'product-images';
 function getAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing Supabase environment variables for product admin actions.');
+  }
+
   return createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
 }
 
@@ -61,41 +66,47 @@ async function uploadProductImage(supabase: ReturnType<typeof getAdminClient>, f
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = getAdminClient();
-  const formData = await request.formData();
-  const mode = formData.get('mode') as string;
-  const id = formData.get('id') as string | null;
-  const title = formData.get('title') as string;
-  const description = ((formData.get('description') as string | null) || '').trim();
-  const category = formData.get('category') as string;
-  const existingImageUrl = formData.get('existing_image_url') as string | null;
-  const uploadedImageUrl = await uploadProductImage(supabase, formData);
-  const image_url = uploadedImageUrl || existingImageUrl || null;
+  try {
+    const supabase = getAdminClient();
+    const formData = await request.formData();
+    const mode = formData.get('mode') as string;
+    const id = formData.get('id') as string | null;
+    const title = formData.get('title') as string;
+    const description = ((formData.get('description') as string | null) || '').trim();
+    const category = formData.get('category') as string;
+    const existingImageUrl = formData.get('existing_image_url') as string | null;
+    const uploadedImageUrl = await uploadProductImage(supabase, formData);
+    const image_url = uploadedImageUrl || existingImageUrl || null;
 
-  const payload = {
-    title,
-    description: description || null,
-    price: 0,
-    image_url,
-    category: category || 'Uncategorized',
-    stock_quantity: 0,
-  };
+    const payload = {
+      title,
+      description: description || null,
+      image_url,
+      category: category || 'Uncategorized',
+    };
 
-  if (mode === 'edit' && id) {
-    const { error } = await supabase.from('products').update(payload).eq('id', id);
+    if (mode === 'edit' && id) {
+      const { error } = await supabase.from('products').update(payload).eq('id', id);
 
-    if (error) {
-      throw new Error(`Failed to update product: ${error.message}`);
+      if (error) {
+        throw new Error(`Failed to update product: ${error.message}`);
+      }
+    } else {
+      const { error } = await supabase.from('products').insert(payload);
+
+      if (error) {
+        throw new Error(`Failed to add product: ${error.message}`);
+      }
     }
-  } else {
-    const { error } = await supabase.from('products').insert(payload);
 
-    if (error) {
-      throw new Error(`Failed to add product: ${error.message}`);
-    }
+    revalidatePath('/admin/products');
+    revalidatePath('/customer');
+    return NextResponse.redirect(new URL('/admin/products', request.url), 303);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to save product.';
+    console.error('Product submit failed:', message);
+    const redirectUrl = new URL('/admin/products/new', request.url);
+    redirectUrl.searchParams.set('error', message);
+    return NextResponse.redirect(redirectUrl, 303);
   }
-
-  revalidatePath('/admin/products');
-  revalidatePath('/customer');
-  return NextResponse.redirect(new URL('/admin/products', request.url), 303);
 }

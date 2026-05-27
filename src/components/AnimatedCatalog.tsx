@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import WishlistButton from '@/components/WishlistButton';
-import CategoryHamburger from '@/components/CategoryHamburger';
+import CategoryHamburger, { type CategoryCount } from '@/components/CategoryHamburger';
 
 gsap.registerPlugin(useGSAP);
 
@@ -56,9 +56,11 @@ function ProductCard({ product }: { product: CatalogProduct }) {
 function CategorySection({
   category,
   products,
+  totalProducts,
 }: {
   category: string;
   products: CatalogProduct[];
+  totalProducts: number;
 }) {
   const [isHidden, setIsHidden] = useState(false);
   const [batchSize, setBatchSize] = useState(2);
@@ -87,6 +89,9 @@ function CategorySection({
         <div>
           <span className="badge badge-warm">Category</span>
           <h2>{category}</h2>
+          <p className="category-count">
+            {totalProducts} product{totalProducts === 1 ? '' : 's'}
+          </p>
         </div>
 
         <div className="category-actions">
@@ -127,12 +132,18 @@ function CategorySection({
 
 export default function AnimatedCatalog({
   categories,
+  categoryCounts,
   groupedProducts,
 }: {
   categories: string[];
+  categoryCounts: Record<string, number>;
   groupedProducts: Record<string, CatalogProduct[]>;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const categoryCountItems: CategoryCount[] = categories.map((category) => ({
+    name: category,
+    count: categoryCounts[category] || 0,
+  }));
 
   useGSAP(() => {
     gsap.from('.category-header', {
@@ -149,12 +160,13 @@ export default function AnimatedCatalog({
     <div ref={containerRef}>
       <div className="catalog-toolbar">
         <span className="eyebrow">Browse by collection</span>
-        <CategoryHamburger categories={categories} />
+        <CategoryHamburger categories={categoryCountItems} />
       </div>
 
       {categories.map((category) => (
         <CategorySection
           category={category}
+          totalProducts={categoryCounts[category] || 0}
           products={groupedProducts[category]}
           key={category}
         />

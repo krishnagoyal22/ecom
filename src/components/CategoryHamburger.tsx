@@ -4,7 +4,12 @@ import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
-export default function CategoryHamburger({ categories }: { categories: string[] }) {
+export type CategoryCount = {
+  name: string;
+  count: number;
+};
+
+export default function CategoryHamburger({ categories }: { categories: CategoryCount[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,13 +68,16 @@ export default function CategoryHamburger({ categories }: { categories: string[]
       >
         <ul className="category-menu-list">
           {categories.map((category) => (
-            <li key={category} className="hamburger-item">
+            <li key={category.name} className="hamburger-item">
               <button
-                onClick={() => scrollToCategory(category)}
+                onClick={() => scrollToCategory(category.name)}
                 type="button"
                 className="category-menu-item"
               >
-                {category}
+                <span>{category.name}</span>
+                <span className="category-menu-count">
+                  {category.count}
+                </span>
               </button>
             </li>
           ))}

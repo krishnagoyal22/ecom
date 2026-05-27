@@ -98,7 +98,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span className="theme-toggle-label">Theme</span>
+      <span className="theme-toggle-label">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
     </button>
   );
 }

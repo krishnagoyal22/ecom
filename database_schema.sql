@@ -38,8 +38,6 @@ CREATE TABLE IF NOT EXISTS public.products (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   title text NOT NULL,
   description text,
-  price numeric(10, 2) NOT NULL,
-  stock_quantity integer DEFAULT 0,
   image_url text,
   category text,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -51,64 +49,42 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view products" ON public.products FOR SELECT USING (true);
 
 
+-- Remove old order tables if they exist.
+DROP TABLE IF EXISTS public.order_items;
+DROP TABLE IF EXISTS public.orders;
+
+
 -- ==============================================================================
--- 3. ORDERS TABLE
+-- 3. WISHLIST TABLE
 -- ==============================================================================
-CREATE TABLE IF NOT EXISTS public.orders (
+CREATE TABLE IF NOT EXISTS public.wishlist (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
-  status text DEFAULT 'Pending',
-  total_amount numeric(10, 2) NOT NULL DEFAULT 0,
-  shipping_address text,
-  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  product_id uuid REFERENCES public.products(id) ON DELETE CASCADE NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE (user_id, product_id)
 );
 
-ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS wishlist_user_id_idx ON public.wishlist (user_id);
+CREATE INDEX IF NOT EXISTS wishlist_product_id_idx ON public.wishlist (product_id);
 
--- Orders: Users can only see their own orders.
-CREATE POLICY "Users can view own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own orders" ON public.orders FOR INSERT WITH CHECK (auth.uid() = user_id);
+ALTER TABLE public.wishlist ENABLE ROW LEVEL SECURITY;
 
-
--- ==============================================================================
--- 4. ORDER ITEMS TABLE
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS public.order_items (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  order_id uuid REFERENCES public.orders(id) ON DELETE CASCADE NOT NULL,
-  product_id uuid REFERENCES public.products(id) ON DELETE SET NULL,
-  quantity integer NOT NULL DEFAULT 1,
-  price_at_purchase numeric(10, 2) NOT NULL
-);
-
-ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
-
--- Order Items: Users can see the items of their own orders
-CREATE POLICY "Users can view own order items" ON public.order_items FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM public.orders 
-    WHERE public.orders.id = public.order_items.order_id 
-    AND public.orders.user_id = auth.uid()
-  )
-);
-CREATE POLICY "Users can insert own order items" ON public.order_items FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM public.orders 
-    WHERE public.orders.id = public.order_items.order_id 
-    AND public.orders.user_id = auth.uid()
-  )
-);
+-- Wishlist: Users can manage only their own saved products.
+CREATE POLICY "Users can view own wishlist" ON public.wishlist FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can add own wishlist items" ON public.wishlist FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own wishlist items" ON public.wishlist FOR DELETE USING (auth.uid() = user_id);
 
 
 -- ==============================================================================
 -- 5. MOCK DATA INITIALIZATION
 -- ==============================================================================
 -- Seed Mock Products
-INSERT INTO public.products (title, description, price, stock_quantity, category) VALUES
-  ('Premium Wireless Headphones', 'Noise-cancelling, 30hr battery', 299.99, 50, 'Electronics'),
-  ('Mechanical Keyboard', 'RGB switches, aluminum body', 149.50, 120, 'Accessories'),
-  ('Ergonomic Mouse', 'Vertical design to reduce strain', 79.00, 200, 'Accessories'),
-  ('4K Monitor', '32-inch ultra-high definition display', 399.99, 30, 'Electronics')
+INSERT INTO public.products (title, description, category) VALUES
+  ('Premium Wireless Headphones', 'Noise-cancelling, 30hr battery', 'Electronics'),
+  ('Mechanical Keyboard', 'RGB switches, aluminum body', 'Accessories'),
+  ('Ergonomic Mouse', 'Vertical design to reduce strain', 'Accessories'),
+  ('4K Monitor', '32-inch ultra-high definition display', 'Electronics')
 ON CONFLICT DO NOTHING;
 
 -- Synchronize any ALREADY EXISTING Auth users into the Profiles table

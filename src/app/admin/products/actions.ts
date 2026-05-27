@@ -48,6 +48,19 @@ function getProductTitleFromFileName(fileName: string) {
   return fileName.replace(/\.[^.]+$/, '').trim() || fileName;
 }
 
+function getProductKey(title: string | null | undefined, category: string | null | undefined) {
+  const normalizedCategory = (category || 'Uncategorized').trim().toLowerCase();
+  const normalizedTitle = (title || '')
+    .replace(/\.[^.]+$/, '')
+    .replace(/\s*\(\d+\)\s*$/, '')
+    .replace(/\s+-\s+copy\s*$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  return `${normalizedCategory}:${normalizedTitle}`;
+}
+
 async function uploadProductImage(supabase: ReturnType<typeof getAdminClient>, formData: FormData) {
   const image = formData.get('image') as File | null;
 
@@ -123,7 +136,7 @@ export async function syncProductsFromImageBucket() {
 
   const { data: existingProducts, error: existingProductsError } = await supabase
     .from('products')
-    .select('image_url');
+    .select('title, category, image_url');
 
   if (existingProductsError) {
     throw new Error(`Failed to read existing products: ${existingProductsError.message}`);
@@ -133,6 +146,9 @@ export async function syncProductsFromImageBucket() {
     (existingProducts || [])
       .map((product) => product.image_url)
       .filter((imageUrl): imageUrl is string => Boolean(imageUrl))
+  );
+  const existingProductKeys = new Set(
+    (existingProducts || []).map((product) => getProductKey(product.title, product.category))
   );
 
   const productsToInsert = [];
@@ -154,6 +170,12 @@ export async function syncProductsFromImageBucket() {
         continue;
       }
 
+      const title = getProductTitleFromFileName(file.name);
+      const productKey = getProductKey(title, category);
+      if (existingProductKeys.has(productKey)) {
+        continue;
+      }
+
       const imagePath = `${category}/${file.name}`;
       const { data } = supabase.storage.from(PRODUCT_IMAGE_BUCKET).getPublicUrl(imagePath);
 
@@ -162,13 +184,12 @@ export async function syncProductsFromImageBucket() {
       }
 
       existingImageUrls.add(data.publicUrl);
+      existingProductKeys.add(productKey);
       productsToInsert.push({
-        title: getProductTitleFromFileName(file.name),
+        title,
         description: null,
-        price: 0,
         image_url: data.publicUrl,
         category,
-        stock_quantity: 0,
       });
     }
   }
@@ -197,10 +218,8 @@ export async function addProduct(formData: FormData) {
   const { error } = await supabase.from('products').insert({
     title,
     description: description || null,
-    price: 0,
     image_url: image_url || null,
     category: category || 'Uncategorized',
-    stock_quantity: 0,
   });
 
   if (error) {
@@ -226,10 +245,8 @@ export async function updateProduct(formData: FormData) {
   const { error } = await supabase.from('products').update({
     title,
     description: description || null,
-    price: 0,
     image_url: image_url || null,
     category: category || 'Uncategorized',
-    stock_quantity: 0,
   }).eq('id', id);
 
   if (error) {
