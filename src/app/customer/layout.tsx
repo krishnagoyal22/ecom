@@ -25,7 +25,7 @@ export default async function CustomerLayout({
   const storageKey = user ? `wishlist:${user.id}` : 'wishlist:guest';
 
   return (
-    <WishlistProvider isGuest={!user} storageKey={storageKey}>
+    <WishlistProvider isGuest={!user} storageKey={storageKey} userId={user?.id}>
       <div className="customer-shell">
         <CustomerHeader userEmail={user?.email} isAdmin={isAdmin} />
         <main className="container store-main">{children}</main>
