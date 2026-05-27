@@ -47,6 +47,13 @@ export default async function CustomerPage({ searchParams }: PageProps) {
   );
 
   const categories = Object.keys(groupedProducts).sort();
+  const categoryCounts = categories.reduce(
+    (acc, category) => {
+      acc[category] = groupedProducts[category].length;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return (
     <div className="panel-grid">
@@ -83,6 +90,7 @@ export default async function CustomerPage({ searchParams }: PageProps) {
       {displayProducts.length > 0 ? (
         <AnimatedCatalog
           categories={categories}
+          categoryCounts={categoryCounts}
           groupedProducts={groupedProducts}
         />
       ) : null}

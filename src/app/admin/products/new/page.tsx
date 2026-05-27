@@ -1,6 +1,13 @@
 import Link from 'next/link';
 
-export default function NewProductPage() {
+export default async function NewProductPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const error = resolvedSearchParams.error;
+
   return (
     <div className="admin-form-shell admin-panel fade-in">
       <section className="page-head">
@@ -14,6 +21,12 @@ export default function NewProductPage() {
       </section>
 
       <section className="panel-card">
+        {error ? (
+          <div className="status-message status-error" style={{ marginBottom: '1rem' }}>
+            {error}
+          </div>
+        ) : null}
+
         <form action="/admin/products/submit" method="post" encType="multipart/form-data" className="responsive-stack">
           <input type="hidden" name="mode" value="new" />
           <div className="form-grid">

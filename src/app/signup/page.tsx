@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import GoogleAuthButton from "@/components/GoogleAuthButton";
 import { createClient } from "@/utils/supabase/client";
 
 export default function SignupPage() {
@@ -93,6 +94,12 @@ export default function SignupPage() {
           {success && (
             <div className="status-message status-success">{success}</div>
           )}
+
+          <GoogleAuthButton />
+
+          <div className="auth-divider">
+            <span>or use email</span>
+          </div>
 
           <form onSubmit={handleSignup} className="auth-stack">
             <div>

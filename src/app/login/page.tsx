@@ -3,12 +3,16 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search).get('error');
+  });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -30,6 +34,7 @@ export default function LoginPage() {
     }
 
     router.push('/customer');
+    router.refresh();
   };
 
   return (
@@ -78,6 +83,12 @@ export default function LoginPage() {
           </div>
 
           {error && <div className="status-message status-error">{error}</div>}
+
+          <GoogleAuthButton />
+
+          <div className="auth-divider">
+            <span>or use email</span>
+          </div>
 
           <form onSubmit={handleLogin} className="auth-stack">
             <div>
