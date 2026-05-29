@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
 
 function ArrowIcon() {
   return (
@@ -9,7 +9,7 @@ function ArrowIcon() {
       viewBox="0 0 16 16"
       fill="none"
       aria-hidden="true"
-      style={{ marginLeft: '0.5rem' }}
+      style={{ marginLeft: "0.5rem" }}
     >
       <path
         d="M3 8H13M13 8L9 4M13 8L9 12"
@@ -59,15 +59,18 @@ export default async function Home() {
       <section className="kottiar-hero">
         <div className="kottiar-hero-copy">
           <span className="badge">Kottiar creations</span>
-          <h1>KottiarCatalog</h1>
+          <h2>KottiarCatalog</h2>
           <p>
             Browse a focused catalog of Kottiar bangles, arranged for quick
             discovery by collection, finish, and style.
           </p>
 
           <div className="hero-actions">
-            <Link href={user ? '/customer' : '/signup'} className="btn btn-primary btn-lg">
-              {user ? 'Browse bangles' : 'Start browsing'}
+            <Link
+              href={user ? "/customer" : "/signup"}
+              className="btn btn-primary btn-lg"
+            >
+              {user ? "Browse bangles" : "Start browsing"}
               <ArrowIcon />
             </Link>
             {!user ? (
