@@ -6,6 +6,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'KottiarCatalog',
   description: 'Browse Kottiar creations and bangle collections.',
+  icons: {
+    icon: '/logo/Kottiar creations logo.jpeg',
+    shortcut: '/logo/Kottiar creations logo.jpeg',
+    apple: '/logo/Kottiar creations logo.jpeg',
+  },
   openGraph: {
     title: 'KottiarCatalog',
     description: 'Browse Kottiar creations and bangle collections.',

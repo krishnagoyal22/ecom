@@ -59,7 +59,19 @@ export default async function Home() {
       <section className="kottiar-hero">
         <div className="kottiar-hero-copy">
           <span className="badge">Kottiar creations</span>
-          <h2>KottiarCatalog</h2>
+          <img
+            src="/logo/Kottiar creations logo.jpeg"
+            alt="Kottiar Creations"
+            style={{
+              maxWidth: '380px',
+              width: '100%',
+              height: 'auto',
+              borderRadius: '8px',
+              boxShadow: 'var(--shadow-sm)',
+              margin: '1.2rem 0 1.5rem',
+              display: 'block'
+            }}
+          />
           <p>
             Browse a focused catalog of Kottiar bangles, arranged for quick
             discovery by collection, finish, and style.

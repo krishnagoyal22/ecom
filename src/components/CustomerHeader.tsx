@@ -41,7 +41,7 @@ export default function CustomerHeader({
         <div className="nav-links">
           <Link href="/customer" className="brand-mark">
             <span className="brand-mark-badge" />
-            <span>KottiarCatalog</span>
+
           </Link>
           <Link href="/customer" className="nav-link">
             Catalog
