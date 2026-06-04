@@ -1,8 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
+import { useState, useEffect, useRef } from 'react';
 
 export type CategoryCount = {
   name: string;
@@ -11,41 +9,21 @@ export type CategoryCount = {
 
 export default function CategoryHamburger({ categories }: { categories: CategoryCount[] }) {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    if (isOpen) {
-      gsap.to(menuRef.current, {
-        height: 'auto',
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-        display: 'block',
-      });
+  // Close the dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-      gsap.from('.hamburger-item', {
-        y: -10,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.2,
-        ease: 'power2.out',
-      });
-
-      return;
-    }
-
-    gsap.to(menuRef.current, {
-      height: 0,
-      opacity: 0,
-      duration: 0.2,
-      ease: 'power2.in',
-      onComplete: () => {
-        if (menuRef.current) {
-          menuRef.current.style.display = 'none';
-        }
-      },
-    });
-  }, [isOpen]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const scrollToCategory = (category: string) => {
     setIsOpen(false);
@@ -56,19 +34,17 @@ export default function CategoryHamburger({ categories }: { categories: Category
   };
 
   return (
-    <div className="category-menu" style={{ position: 'relative' }}>
+    <div ref={containerRef} className="category-menu" style={{ position: 'relative' }}>
       <button onClick={() => setIsOpen((value) => !value)} className="btn btn-secondary" type="button">
         Browse categories
       </button>
 
       <div
-        ref={menuRef}
-        className="category-menu-panel"
-        style={{ display: 'none', opacity: 0, height: 0 }}
+        className={`category-menu-panel ${isOpen ? 'show' : ''}`}
       >
         <ul className="category-menu-list">
           {categories.map((category) => (
-            <li key={category.name} className="hamburger-item">
+            <li key={category.name}>
               <button
                 onClick={() => scrollToCategory(category.name)}
                 type="button"

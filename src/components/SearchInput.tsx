@@ -21,19 +21,16 @@ export default function SearchInput() {
 
   return (
     <form onSubmit={handleSearch} className="search-shell fade-in">
-      <span className="search-icon" aria-hidden="true">
-        Search
-      </span>
       <input
         type="text"
-        placeholder="Search bangles by name, finish, or style"
+        placeholder="Search bangles"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="input-field"
         aria-label="Search Kottiar bangles"
       />
       <button type="submit" className="btn btn-primary">
-        Search catalog
+        Search
       </button>
     </form>
   );

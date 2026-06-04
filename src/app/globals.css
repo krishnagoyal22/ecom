@@ -480,11 +480,14 @@ html[data-theme="dark"] .btn-secondary:hover {
 .auth-form,
 .store-panel,
 .product-card,
-.category-menu,
 .search-shell,
 .top-nav {
   position: relative;
   overflow: hidden;
+}
+
+.category-menu {
+  position: relative;
 }
 
 .hero-copy,
@@ -976,9 +979,15 @@ html[data-theme="dark"] .btn-secondary:hover {
   width: min(20rem, calc(100vw - 2rem));
   padding: 0.55rem;
   border-radius: 24px;
-  background: rgba(255, 251, 245, 0.95);
-  border: 1px solid rgba(77, 47, 35, 0.08);
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
   box-shadow: var(--shadow-md);
+  z-index: 50;
+  display: none;
+}
+
+.category-menu-panel.show {
+  display: block;
 }
 
 .category-menu-list {
@@ -1022,6 +1031,7 @@ html[data-theme="dark"] .btn-secondary:hover {
 
 .category-section {
   margin-bottom: clamp(3.8rem, 7vw, 6rem);
+  scroll-margin-top: 6.5rem;
 }
 
 .category-header {
@@ -1767,7 +1777,6 @@ html[data-theme="dark"] .auth-form,
 html[data-theme="dark"] .store-panel,
 html[data-theme="dark"] .top-nav,
 html[data-theme="dark"] .search-shell,
-html[data-theme="dark"] .category-menu-panel,
 html[data-theme="dark"] .product-card,
 html[data-theme="dark"] .sidebar,
 html[data-theme="dark"] .sidebar-user,
