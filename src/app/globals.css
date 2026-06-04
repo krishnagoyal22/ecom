@@ -59,28 +59,22 @@
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #180D47;
-  /* Warm luxurious indigo - lighter and more vibrant than pitch black */
-  --bg-accent: #231562;
-  /* Delicate violet-indigo accent background */
-  --surface: rgba(70, 30, 180, 0.22);
-  /* High-end amethyst translucent surface */
-  --surface-strong: #2A1A78;
+  --bg: #0d021c;
+  --bg-accent: #16072b;
+  --surface: rgba(26, 7, 48, 0.45);
+  --surface-strong: #1d0a36;
   --surface-dark: #FCFBF7;
   --line: rgba(212, 160, 23, 0.15);
-  /* Warm gold border highlight */
   --line-strong: rgba(212, 160, 23, 0.28);
   --border-color: var(--line);
   --panel-bg: var(--surface);
 
   --text-primary: #FCFBF7;
-  /* Lighter soft ivory */
-  --text-secondary: #EADECA;
-  --text-muted: #AFA08C;
-  --text-on-dark: #180D47;
+  --text-secondary: #c5bce0;
+  --text-muted: #8e7fae;
+  --text-on-dark: #0d021c;
 
   --accent-primary: #E8B228;
-  /* Vibrant Warm Gold */
   --accent-secondary: #FCFBF7;
   --accent-tertiary: #E5C158;
   --accent-berry: #FCFBF7;
@@ -118,15 +112,15 @@ body {
   font-family: var(--font-sans);
   background:
     radial-gradient(circle at top left,
-      rgba(46, 13, 149, 0.08),
+      rgba(168, 85, 247, 0.08),
       transparent 26%),
     radial-gradient(circle at 85% 15%,
-      rgba(212, 160, 23, 0.08),
+      rgba(0, 240, 255, 0.08),
       transparent 24%),
     radial-gradient(circle at 80% 85%,
-      rgba(122, 31, 61, 0.06),
+      rgba(233, 30, 99, 0.06),
       transparent 28%),
-    linear-gradient(180deg, #FFFFFF 0%, #FCFBF7 50%, #FFF8E8 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #FCFBF7 50%, #F5F2EA 100%);
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -142,9 +136,9 @@ html[data-theme="dark"] body {
       rgba(255, 255, 255, 0.02),
       transparent 24%),
     radial-gradient(circle at 80% 85%,
-      rgba(46, 13, 149, 0.1),
+      rgba(168, 85, 247, 0.1),
       transparent 28%),
-    linear-gradient(180deg, #221463 0%, #180D47 50%, #11063B 100%);
+    linear-gradient(180deg, #110122 0%, #0d021c 50%, #070012 100%);
 }
 
 button,
@@ -1824,7 +1818,7 @@ html[data-theme="dark"] .product-detail-media {
     radial-gradient(circle at top left,
       rgba(212, 160, 23, 0.18),
       transparent 34%),
-    linear-gradient(145deg, #231562, #180D47);
+    linear-gradient(145deg, #1a0633, #110122);
   border-color: rgba(212, 160, 23, 0.15);
 }
 
@@ -2178,9 +2172,9 @@ html[data-theme="dark"] .kottiar-home {
       rgba(212, 160, 23, 0.12),
       transparent 30%),
     radial-gradient(circle at 82% 28%,
-      rgba(46, 13, 149, 0.25),
+      rgba(168, 85, 247, 0.2),
       transparent 26%),
-    linear-gradient(180deg, #180D47 0%, #13093D 52%, #0E0430 100%);
+    linear-gradient(180deg, #110122 0%, #0d021c 52%, #070012 100%);
 }
 
 /* Ambient orbs */
@@ -2198,7 +2192,7 @@ html[data-theme="dark"] .kottiar-home {
   top: -200px;
   left: -150px;
   background: radial-gradient(circle,
-      rgba(46, 13, 149, 0.18) 0%,
+      rgba(168, 85, 247, 0.18) 0%,
       transparent 70%);
 }
 
@@ -2234,7 +2228,7 @@ html[data-theme="dark"] .kottiar-home {
 }
 
 html[data-theme="dark"] .home-nav {
-  background: rgba(24, 13, 71, 0.85);
+  background: rgba(26, 7, 48, 0.85);
 }
 
 .home-nav-inner {
