@@ -87,7 +87,6 @@ function CategorySection({
     >
       <div className="category-header">
         <div>
-          <span className="badge badge-warm">Category</span>
           <h2>{category}</h2>
           <p className="category-count">
             {totalProducts} product{totalProducts === 1 ? '' : 's'}

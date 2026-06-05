@@ -58,11 +58,10 @@ export default async function CustomerPage({ searchParams }: PageProps) {
   return (
     <div className="panel-grid">
       <section className="store-catalog-intro fade-in">
-        <span className="eyebrow">Kottiar creations</span>
         <h1>
-          Browse <span className="text-gradient">Kottiar Creations</span>{" "}
-          bangles.
+          <span className="text-gradient">KOTTIAR CREATIONS</span>
         </h1>
+        <h2>PREMIUM GLASS BANGLES</h2>
         <p>
           A focused catalog for exploring Kottiar bangles designs by collection,
           finish, and style.
