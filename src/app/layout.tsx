@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import ThemeToggle from '@/components/ThemeToggle';
+import InstagramButton from '@/components/InstagramButton';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -47,7 +48,8 @@ export default function RootLayout({
             `,
           }}
         />
-        <ThemeToggle />
+        <InstagramButton />
+        <WhatsAppButton />
         {children}
       </body>
     </html>

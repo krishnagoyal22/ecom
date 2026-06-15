@@ -75,7 +75,11 @@ function setStoredTheme(theme: ThemeMode) {
   themeListeners.forEach((listener) => listener());
 }
 
-export default function ThemeToggle() {
+export default function ThemeToggle({
+  placement = 'floating',
+}: {
+  placement?: 'floating' | 'inline';
+}) {
   const theme = useSyncExternalStore(
     subscribeToThemeChanges,
     getPreferredTheme,
@@ -94,7 +98,7 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
-      className="theme-toggle btn btn-secondary"
+      className={`theme-toggle theme-toggle-${placement} btn btn-secondary`}
       onClick={toggleTheme}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >

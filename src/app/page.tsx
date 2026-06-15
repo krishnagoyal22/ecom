@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 import { createClient } from "@/utils/supabase/server";
 
 function ArrowIcon() {
@@ -38,6 +39,7 @@ export default async function Home() {
           </span>
 
           <div className="home-nav-actions">
+            <ThemeToggle placement="inline" />
             {!user ? (
               <>
                 <Link href="/login" className="btn btn-secondary btn-sm">

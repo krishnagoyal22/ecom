@@ -7,6 +7,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useWishlist } from '@/context/WishlistContext';
 import { createClient } from '@/utils/supabase/client';
+import ThemeToggle from './ThemeToggle';
 
 export default function CustomerHeader({
   userEmail,
@@ -58,6 +59,7 @@ export default function CustomerHeader({
         </div>
 
         <div className="nav-actions">
+          <ThemeToggle placement="inline" />
           {userEmail ? (
             <>
               <span className="nav-meta">{userEmail}</span>

@@ -396,16 +396,82 @@ html[data-theme="dark"] .btn-secondary:hover {
 }
 
 .theme-toggle {
+  touch-action: manipulation;
+}
+
+.theme-toggle-floating {
   position: fixed;
   right: max(1rem, env(safe-area-inset-right));
   bottom: max(1rem, env(safe-area-inset-bottom));
   z-index: 1000;
   box-shadow: var(--shadow-md);
-  touch-action: manipulation;
+}
+
+.theme-toggle-inline {
+  min-height: 2.7rem;
+  padding: 0.68rem 1rem;
+  box-shadow: none;
 }
 
 .theme-toggle-label {
   white-space: nowrap;
+}
+
+.social-button {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.social-button:hover,
+.social-button:focus-visible {
+  box-shadow: var(--shadow-lg);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.social-button svg {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.whatsapp-button {
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  background: #25d366;
+}
+
+.whatsapp-button:hover,
+.whatsapp-button:focus-visible {
+  background: #1ebe5d;
+}
+
+.instagram-button {
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.05rem);
+  background:
+    radial-gradient(circle at 30% 110%, #fdf497 0 13%, #fdf49700 27%),
+    radial-gradient(circle at 10% 90%, #fd5949 0 28%, #fd594900 48%),
+    linear-gradient(135deg, #405de6 0%, #833ab4 38%, #c13584 62%, #e1306c 100%);
+}
+
+.instagram-button:hover,
+.instagram-button:focus-visible {
+  background:
+    radial-gradient(circle at 30% 110%, #fff4a3 0 13%, #fff4a300 27%),
+    radial-gradient(circle at 10% 90%, #ff6a5d 0 28%, #ff6a5d00 48%),
+    linear-gradient(135deg, #516df0 0%, #9348c4 38%, #cf4592 62%, #eb427b 100%);
 }
 
 .site-shell::before,
@@ -2094,9 +2160,17 @@ html[data-theme="dark"] td {
     gap: 0.85rem;
   }
 
-  .theme-toggle {
+  .theme-toggle-floating,
+  .social-button {
     right: max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .whatsapp-button {
     bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .instagram-button {
+    bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 4.05rem);
   }
 }
 
@@ -2626,9 +2700,20 @@ html[data-theme="dark"] .home-nav {
     padding: 0.8rem 1rem;
   }
 
-  .theme-toggle {
+  .theme-toggle-floating,
+  .social-button {
     right: max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .whatsapp-button {
     bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .instagram-button {
+    bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.05rem);
+  }
+
+  .theme-toggle-floating {
     min-height: 2.75rem;
     padding: 0.7rem 1rem;
   }
